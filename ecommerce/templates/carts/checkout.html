@@ -12,7 +12,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title mb-4">Billing Address</h4>
-                        <form action="" method="post">
+                        <form action="{% url "place_order" %}" method="post">
                             {% csrf_token %}
                             <div class="form-row">
                                 <div class="col form-group">
@@ -23,7 +23,7 @@
                                     <label for="">Last Name</label>
                                     <input type="text" name="last_name" class="form-control" required>
                                 </div>
-                            </div>
+                              </div>
                             <div class="form-row">
                                 <div class="col form-group">
                                     <label for="">Email</label>
@@ -55,11 +55,11 @@
                                 </div>
                                 <div class="col form-group">
                                     <label for="">Country</label>
-                                    <input type="text" name="state" class="form-control" required>
+                                    <input type="text" name="country" class="form-control" required>
                                 </div>
                                 <div class="col form-group">
                                     <label for="">Pin Code</label>
-                                    <input type="text" name="Pin Code" class="form-control" required>
+                                    <input type="number" name="pincode" class="form-control" required>
                                 </div>
 
                             </div>
@@ -92,13 +92,7 @@
                                 <div class="aside"><img src="{{cart_item.product.image.url}}" class="img-sm"></div>
                                 <figcaption class="info">
                                     <a href="{{cart_item.product.get_url}}" class="title text-dark">{{cart_item.product.product_name}}</a>
-                                    <p class="text-muted small">
-                                        {% if cart_item.variation.all %}
-                                        {% for item in cart_item.variation.all %}
-                                        {{item.variation_category | capfirst}} : {{item.variation_value | capfirst}} <br>
-                                        {% endfor %}
-                                        {% endif %}
-                                    </p>
+                                  
                                 </figcaption>
                             </figure>
 </td>

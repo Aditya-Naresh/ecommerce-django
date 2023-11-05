@@ -13,6 +13,7 @@ from django.template.loader import render_to_string
 from django.http import HttpResponse
 from carts.views import _cart_id
 from carts.models import Cart, CartItem
+from django.views.decorators.cache import never_cache
 
 
 import requests
@@ -67,7 +68,7 @@ def register(request):
     return render(request, 'accounts/register.html', context)
 
 
-
+@never_cache
 def login(request):
     if request.method == 'POST':
         email = request.POST['email']
@@ -166,6 +167,7 @@ def activate(request, uidb64, token):
     
 
 @login_required(login_url='login')
+@never_cache
 def dashboard(request):
     return render(request, 'accounts/dashboard.html')
 
