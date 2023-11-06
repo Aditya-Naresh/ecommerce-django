@@ -20,3 +20,8 @@ class VariationAdmin(admin.ModelAdmin):
     list_editable = ('is_active',)
     list_filter = ('product', 'variation_category', 'variation_value', 'is_active')
 admin.site.register(Variation, VariationAdmin)
+
+
+
+
+admin.site.register(ReviewRating)

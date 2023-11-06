@@ -46,6 +46,7 @@ def download_invoice(request, order_id):
         'transID': payment.payment_id,
         'ordered_products': ordered_products,
         'subtotal': subtotal,
+        'status': payment.status
     }
 
     template_path = 'orders/invoice.html'  # Replace with the path to your HTML template
