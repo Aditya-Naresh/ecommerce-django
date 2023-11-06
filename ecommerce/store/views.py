@@ -14,7 +14,7 @@ def store(request, category_slug = None, brand_slug = None):
     brands = None
     categories = None
     products = None
-    items_per_page = 1
+    items_per_page = 6
 
     if category_slug is not None:
         categories = get_object_or_404(Category, slug = category_slug)
@@ -26,6 +26,7 @@ def store(request, category_slug = None, brand_slug = None):
     elif brand_slug is not None:
         brands = get_object_or_404(Brand, slug = brand_slug)
         products = Product.objects.filter(brand =brands, is_available = True).order_by('id')
+        paginator = Paginator(products, items_per_page)
         page = request.GET.get('page')
         paged_products = paginator.get_page(page)
         product_count = products.count()
@@ -36,11 +37,14 @@ def store(request, category_slug = None, brand_slug = None):
         paged_products = paginator.get_page(page)
         product_count = products.count()
 
+    for product in products:
+        reviews = ReviewRating.objects.filter(product_id = product.id, status = True)
 
 
     context = {
             'products':paged_products,
             'product_count':product_count,
+            'reviews': reviews
         }    
     return render(request, 'store/store.html', context)
 
@@ -66,13 +70,14 @@ def product_detail(request, brand_slug, product_slug):
 
     # Get reviews
     reviews = ReviewRating.objects.filter(product_id = single_product.id, status = True)
-        
+    product_gallery = ProductGallery.objects.filter(product_id = single_product.id) 
     
     context = {
         'single_product':single_product,
         'in_cart' :in_cart,
         'orderproduct':orderproduct,
-        'reviews' : reviews
+        'reviews' : reviews,
+        'product_gallery' : product_gallery
     }
     return render(request, 'store/product_detail.html', context)
 

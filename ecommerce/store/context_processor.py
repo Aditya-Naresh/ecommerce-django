@@ -1,4 +1,4 @@
-from .models import Brand
+from .models import Brand,Variation
 
 
 def brand_links(request):
