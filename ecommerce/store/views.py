@@ -8,6 +8,7 @@ from django.db.models import Q
 from .forms import ReviewForm
 from django.contrib import messages
 from orders.models import OrderProduct
+from wishlist.models import Wishlist
 # Create your views here.
 
 def store(request, category_slug = None, brand_slug = None):

@@ -4,6 +4,7 @@ from .models import *
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required 
 from django.http import HttpResponse
+from wishlist.models import Wishlist
 # Create your views here.
 
 def _cart_id(request):
@@ -19,10 +20,13 @@ def _cart_id(request):
 def add_cart(request, product_id):
     current_user = request.user
     product = Product.objects.get(id = product_id)
+    wishlist_item = Wishlist.objects.filter(user = current_user, product=product)
+
     # check user authetication
     if current_user.is_authenticated:
         product_variation = []
         if request.method == 'POST':
+            wishlist_item.delete()
             for item in request.POST:
                 key = item
                 value = request.POST[key]
