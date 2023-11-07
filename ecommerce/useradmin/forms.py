@@ -1,0 +1,69 @@
+from django import forms
+from accounts.models import Account
+from store.models import *
+from category.models import Category
+
+class AdminForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput(attrs={
+        'placeholder' : 'Enter Password',
+    }))
+    confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={
+        'placeholder' : 'Confirm Password'
+    }))
+
+    class Meta:
+        model = Account
+        fields = ['first_name', 'last_name', 'phone_number', 'email', 'password']
+
+
+    
+    def __init__(self, *args, **kwargs):
+        super(AdminForm, self).__init__(*args, **kwargs)
+        self.fields['first_name'].widget.attrs['placeholder'] = "Enter First Name"
+        self.fields['last_name'].widget.attrs['placeholder'] = "Enter Last Name"
+        self.fields['phone_number'].widget.attrs['placeholder'] = "Enter Phone Number"
+        self.fields['email'].widget.attrs['placeholder'] = "Enter Email Address"
+        for field in self.fields:
+            self.fields[field].widget.attrs['class'] = "form-control"
+
+    
+    def clean(self):
+        cleaned_data = super(AdminForm, self).clean()
+        password = cleaned_data.get('password')
+        confirm_password = cleaned_data.get('confirm_password')
+
+        if password != confirm_password:
+            raise forms.ValidationError(
+                "Password Does Not Match!"
+            )
+    
+
+
+
+
+
+class CategoryForm(forms.ModelForm):
+
+    class Meta:
+        model = Category
+        fields = ['category_name','description','cat_image']
+
+    def __init__(self, *args, **kwargs):
+        super(CategoryForm, self).__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs['class'] = "form-control"
+
+
+
+
+
+class BrandForm(forms.ModelForm):
+
+    class Meta:
+        model = Brand
+        fields = ['brand_name', 'image']
+    
+    def __init__(self, *args, **kwargs):
+        super(BrandForm, self).__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs['class'] = "form-control"

@@ -2,6 +2,10 @@ from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from accounts.models import Account
+from .forms import *
+from store.models import *
+from django.utils.text import slugify
+
 
 
 # Create your views here.
@@ -87,6 +91,130 @@ def delete_admin(request,user_id):
 
 def create_admin(request):
     if request.user.is_admin:
-        return render(request, 'users/create_admin.html')
+        if request.method == 'POST':
+            form  = AdminForm(request.POST)
+            if form.is_valid():
+                admin = form.save(commit=False)
+                admin.is_admin = True
+                admin.is_staff = True
+                admin.is_active = True
+                admin.is_superadmin =True
+                admin.is_blocked = False
+                admin.save()
+                return redirect('admin_list')
+        form = AdminForm()
+        context = {
+            "form":form,
+        }
+        return render(request, 'users/create_admin.html', context)
     else:
         return redirect('decorator')
+    
+
+# =================================================CATEGORIES===========================================================
+def categories(request):
+    items_per_page = 15
+    p = Paginator(Category.objects.all(), items_per_page)
+    page = request.GET.get('page')
+    categories = p.get_page(page)
+    context = {
+        'categories':categories
+    }
+    return render(request,'categories/categories.html',context)
+
+# -----------------------------------------------------------------------------------------------------------
+
+def edit_category(request,cat_id):
+    cat = Category.objects.get(id=cat_id)
+    
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, request.FILES, instance = cat)
+
+        if form.is_valid():
+            form.save()
+            return redirect('categories')
+    
+    
+    form = CategoryForm(instance=cat)
+
+    context = {
+        "form":form
+    }
+    return render(request, 'categories/category_form.html', context )
+
+# ----------------------------------------------------------------------------------------------------------------
+
+def delete_category(request, cat_id):
+    cat = Category.objects.get(id=cat_id)
+    cat.delete()
+    return redirect('categories')
+
+# -----------------------------------------------------------------------------------------------------------------
+
+def add_category(request):
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('categories')
+    form  = CategoryForm()
+    context = {
+        'form': form
+    }
+    return render(request,'categories/category_form.html', context)
+
+
+
+
+
+# =================================================================================BRANDS=========================================
+def brands(request):
+    items_per_page = 15
+    p = Paginator(Brand.objects.all(), items_per_page)
+    page = request.GET.get('page')
+    data = p.get_page(page)
+    context = {
+        'data':data
+    }
+    return render(request, 'brands/brands.html', context)
+
+
+# ------------------------------------------------------------------------------------------------------------------
+
+def edit_brand(request,brand_id):
+    brand = Brand.objects.get(id=brand_id)
+    
+    if request.method == 'POST':
+        form = BrandForm(request.POST, request.FILES, instance = brand)
+
+        if form.is_valid():
+            form.save()
+            return redirect('brands')
+    
+    
+    form = BrandForm(instance=brand)
+
+    context = {
+        "form":form
+    }
+    return render(request, 'brands/brand_form.html', context )
+
+# -----------------------------------------------------------------------------------------------
+def delete_brand(request,brand_id):
+    brand = Brand.objects.get(id=brand_id)
+    brand.delete()
+    return redirect('brands')
+
+# ------------------------------------------------------------------------------------------------------
+
+def add_brand(request):
+    if request.method == 'POST':
+        form = BrandForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('brands')
+    form = BrandForm()
+    context = {
+        'form':form,
+    }
+    return render(request, 'brands/brand_form.html', context)

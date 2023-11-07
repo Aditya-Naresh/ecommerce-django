@@ -3,13 +3,23 @@ from category.models import Category
 from django.urls import reverse
 from accounts.models import Account
 from django.db.models import Avg, Count
+from django.utils.text import slugify
+
 # Create your models here.
 
 # Brand
 class Brand(models.Model):
     brand_name = models.CharField(max_length=200, unique=True)
-    slug = models.SlugField(max_length=200, unique=True)
+    slug = models.SlugField(max_length=200, unique=True, blank=True)
     image = models.ImageField(upload_to='photos/brands')
+
+
+    def save(self, *args, **kwargs):
+        # Generate the slug based on the name if it doesn't exist
+        if not self.slug:
+            self.slug = slugify(self.brand_name)
+
+        super(Brand, self).save(*args, **kwargs)
 
     def get_url(self):
         return reverse('products_by_brand', args=[self.slug])
