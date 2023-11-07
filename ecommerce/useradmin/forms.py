@@ -67,3 +67,36 @@ class BrandForm(forms.ModelForm):
         super(BrandForm, self).__init__(*args, **kwargs)
         for field in self.fields:
             self.fields[field].widget.attrs['class'] = "form-control"
+
+
+
+
+
+
+class ProductForm(forms.ModelForm):
+    
+    class Meta:
+        model = Product
+        fields = ('product_name','description','price','image','stock','is_available','brand','category')
+    
+    def __init__(self, *args, **kwargs):
+        super(ProductForm, self).__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs['class'] = "form-control"
+
+
+
+
+
+class VariationForm(forms.ModelForm):
+    
+    class Meta:
+        model = Variation
+        fields = ('product','variation_category','variation_value')
+
+
+    def __init__(self, *args, **kwargs):
+        super(VariationForm, self).__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs['class'] = "form-control"
+

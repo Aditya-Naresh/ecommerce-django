@@ -15,6 +15,7 @@ def store(request, category_slug = None, brand_slug = None):
     brands = None
     categories = None
     products = None
+    reviews = None
     items_per_page = 6
 
     if category_slug is not None:

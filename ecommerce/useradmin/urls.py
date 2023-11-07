@@ -26,4 +26,20 @@ urlpatterns = [
     path('edit_brand/<int:brand_id>', views.edit_brand, name='edit_brand'),
     path('delete_brand/<int:brand_id>', views.delete_brand, name='delete_brand'),
     path('add_brand', views.add_brand, name='add_brand'),
+
+# Products------------------------------------------------------------------------------------------------------------
+    path('products/', views.products, name='products'),
+    path('edit_product/<int:product_id>', views.edit_product, name='edit_product'),
+    path('delete_product/<int:product_id>', views.delete_product, name='delete_product'),
+    path('add_product', views.add_product, name='add_product'),
+
+# Product Variations-------------------------------------------------------------------------------------------------------------
+    path('variations', views.variations, name='variations'),
+    path('edit_variation/<int:variation_id>', views.edit_variation, name='edit_variation'),
+    path('delete_variation/<int:variation_id>', views.delete_variation, name='delete_variation'),
+    path('add_variation', views.add_variation, name='add_variation'),
+
+# Orders-----------------------------------------------------------------------------------------------------------------------
+    path('orders', views.orders, name='orders'),
+    path('ship/<int:order_id>', views.ship, name='ship')
 ]

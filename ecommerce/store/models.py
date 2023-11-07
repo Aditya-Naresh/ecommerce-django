@@ -31,7 +31,7 @@ class Brand(models.Model):
 
 class Product(models.Model):
     product_name = models.CharField(max_length=200, unique=True)
-    slug = models.SlugField(max_length=200, unique=True)
+    slug = models.SlugField(max_length=200, unique=True, blank=True)
     description = models.TextField(max_length=500, blank=True)
     price = models.IntegerField()
     image = models.ImageField(upload_to='photos/products')
@@ -41,6 +41,13 @@ class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        # Generate the slug based on the name if it doesn't exist
+        if not self.slug:
+            self.slug = slugify(self.product_name)
+
+        super(Product, self).save(*args, **kwargs)
 
 
     def get_url(self):

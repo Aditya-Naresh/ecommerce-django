@@ -14,15 +14,19 @@ class Category(models.Model):
         verbose_name = "Category"
         verbose_name_plural = "Categories"
 
-    def get_url(self):
-        return reverse('products_by_category', args=[self.slug])
-
-    def __str__(self) -> str:
-        return self.category_name
-    
     def save(self, *args, **kwargs):
         # Generate the slug based on the name if it doesn't exist
         if not self.slug:
             self.slug = slugify(self.category_name)
 
         super(Category, self).save(*args, **kwargs)
+
+
+
+    def get_url(self):
+        return reverse('products_by_category', args=[self.slug])
+
+
+    def __str__(self) -> str:
+        return self.category_name
+    

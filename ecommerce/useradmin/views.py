@@ -5,6 +5,12 @@ from accounts.models import Account
 from .forms import *
 from store.models import *
 from django.utils.text import slugify
+from orders.models import Order
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
+
+
 
 
 
@@ -218,3 +224,161 @@ def add_brand(request):
         'form':form,
     }
     return render(request, 'brands/brand_form.html', context)
+
+
+# ===========================================================PRODUCTS==============================================
+def products(request):
+    items_per_page = 15
+    p = Paginator(Product.objects.all(), items_per_page)
+    page = request.GET.get('page')
+    data = p.get_page(page)
+    context={
+        "data": data
+    }
+    return render(request, 'products/products.html', context)
+
+# ------------------------------------------------------------------------------------------------------------------
+
+def edit_product(request, product_id):
+
+    product = Product.objects.get(id = product_id)
+
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES, instance = product)
+        if form.is_valid():
+            form.save()
+            return redirect('products')
+
+    form = ProductForm(instance = product)
+
+    context = {
+        'form':form
+    }
+
+    return render(request, 'products/product_form.html',context)
+
+
+
+
+# --------------------------------------------------------------------------------------------------------
+
+def delete_product(request,product_id):
+    product = Product.objects.get(id = product_id)
+    product.delete()
+    return redirect('products')
+
+# -----------------------------------------------------------------------------------
+def add_product(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('products')
+    form  = ProductForm()
+    context = {
+        'form':form
+    }
+    return render(request,'products/product_form.html',context)
+
+
+
+# =============================================PRODUCT VARIATIONS==================================
+def variations(request):
+    items_per_page = 15
+    p = Paginator(Variation.objects.all(), items_per_page)
+    page = request.GET.get('page')
+    data = p.get_page(page)
+    context={
+        "data": data
+    }
+    
+    return render(request,'product_variations/variations.html', context)
+
+
+# -------------------------------------------------------------------------------------------------
+
+def edit_variation(request, variation_id):
+    variation = Variation.objects.get(id = variation_id)
+
+    if request.method == 'POST':
+        form = VariationForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            return redirect('variations')
+
+    form = VariationForm(instance=variation)
+
+    context = {
+        'form':form
+    }
+
+    return render(request, 'product_variations/variation_form.html', context)
+
+
+# ---------------------------------------------------------------------------------------
+
+def delete_variation(request, variation_id):
+    variation = Variation.objects.get(id = variation_id)
+    variation.delete()
+    return redirect('variations')
+
+
+# ---------------------------------------------------------------------------------------
+
+
+def add_variation(request):
+
+    if request.method == 'POST':
+        form = VariationForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            return redirect('variations')
+    
+    form = VariationForm()
+
+    context = {
+        'form': form
+    }
+
+    return render(request,'product_variations/variation_form.html', context)
+
+
+
+
+# ==============================================================================ORDERS==========================================================================
+
+
+
+
+def orders(request):
+    items_per_page = 15
+    p = Paginator(Order.objects.all(), items_per_page)
+    page = request.GET.get('page')
+    data = p.get_page(page)
+
+    context = {
+        'data':data
+    }
+    return render(request,'orders/orders.html', context)
+
+
+
+def ship(request, order_id):
+    order = Order.objects.get(id = order_id)
+
+    order.status = 'Shipped'
+    order.save()
+    current_site = get_current_site(request)
+    email = order.email
+    mail_subject = 'Order Shipped'
+    message = render_to_string('orders/shipped_mail.html',{
+        'order':order,
+        'domain' : current_site,
+    })            
+    to_email = email
+    send_mail = EmailMessage(mail_subject, message, to = [to_email])
+    send_mail.send()
+
+    return redirect('orders')
