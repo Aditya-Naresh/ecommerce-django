@@ -29,3 +29,17 @@ def add_address(request):
         'form':form
     }
     return render(request, 'addressbook/addressform.html',context)
+
+
+
+def edit_address(request, address_id):
+    address = UserAddressBook.objects.get(id = address_id, user= request.user)
+
+    form = UserAddressForm(instance = address)
+
+
+    context = {
+        'form': form
+    }
+
+    return render(request, "addressbook/addressform.html", context)

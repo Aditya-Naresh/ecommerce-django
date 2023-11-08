@@ -7,6 +7,9 @@ from django.http import HttpResponse
 from wishlist.models import Wishlist
 from addressbook.forms import UserAddressForm
 from addressbook.models import UserAddressBook
+from django.contrib import messages
+from coupon.forms import CouponForm
+
 # Create your views here.
 
 def _cart_id(request):
@@ -189,9 +192,11 @@ def remove_cart_item(request, product_id,cart_item_id):
 
 
 def cart(request, total=0, quantity = 0 , cart_items = None):
+  
     tax_rate = 2
     tax = 0
     grand_total =0
+    discount = 0
     try:
         if request.user.is_authenticated:
             cart_items = CartItem.objects.filter(user = request.user, is_active = True)
@@ -201,9 +206,12 @@ def cart(request, total=0, quantity = 0 , cart_items = None):
         for cart_item in cart_items:
             total += (cart_item.product.price * cart_item .quantity)
             quantity += cart_item.quantity
-
+            try:        
+                discount = cart_item.cart.coupon.discount_price
+            except:
+                discount = 0
         tax = (tax_rate * total)/100    
-        grand_total = total + tax
+        grand_total = total + tax - discount
     except ObjectDoesNotExist:
         pass
 
@@ -220,6 +228,18 @@ def cart(request, total=0, quantity = 0 , cart_items = None):
 
 @login_required(login_url='login')
 def checkout(request, total=0, quantity = 0 , cart_items = None):
+    coupon_used = False
+    discount_price = 0
+    coupon = CouponForm(request.GET)
+    coupon_obj = None
+    code = None
+    if coupon.is_valid():
+        code = coupon.cleaned_data['code']
+        coupon_obj = Coupon.objects.get(code = code)
+        discount_price = coupon_obj.discount_price
+        coupon_used = True
+    coupon_form = CouponForm()
+
 
     try:
         tax_rate = 2
@@ -235,17 +255,23 @@ def checkout(request, total=0, quantity = 0 , cart_items = None):
             total += (cart_item.product.price * cart_item .quantity)
             quantity += cart_item.quantity
 
-        tax = (tax_rate * total)/100    
-        grand_total = total + tax
+        tax = (tax_rate * total)/100         
+        grand_total = total + tax - discount_price
+ 
     except ObjectDoesNotExist:
         pass
 
-    try:    
+    try:
         address = UserAddressBook.objects.get(user=request.user, status = True)
         form = UserAddressForm(instance = address)
+    except:
+        form = UserAddressForm()
+
+
+
+    try:    
         addresses = UserAddressBook.objects.filter(user=request.user)
     except UserAddressBook.DoesNotExist:
-        form = UserAddressForm()
         addresses = None
     
 
@@ -258,6 +284,9 @@ def checkout(request, total=0, quantity = 0 , cart_items = None):
         'grand_total':grand_total,
         'form':form,
         'addresses': addresses,
+        'coupon_form':coupon_form,
+        'coupon_used':coupon_used,
+        'code' :code,
     }
 
     return render(request, 'carts/checkout.html', context)

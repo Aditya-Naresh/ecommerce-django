@@ -9,6 +9,7 @@
        
         <div class="row">
             <aside class="col-lg-6">
+            
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title mb-4">Billing Address</h4>
@@ -67,7 +68,7 @@
                                 <label for="">Order Note</label>
                                 {{form.order_note}}
                             </div>
-                    </div> <!-- card.// -->
+                        </div> <!-- card.// -->
 
                     <div class="row">
                         {% for add in addresses %}
@@ -92,17 +93,20 @@
                         <div class="card-footer">
                             <i class="fa fa-check-circle text-success check{{add.id}} check" style="display: none;"></i>
                             <a href="{% url "activate" add.id %}" class="btn btn-info"> Activate </a>
-                            <a href="" class="float-right"><i class="fa fa-edit"></i></a>
+                            <a href="{% url "edit_address" add.id %}" class="float-right"><i class="fa fa-edit"></i></a>
                         </div>
                         {% endif %}
                     </div>
                     
                     {% endfor %}
                 </div>
-                <a href="{% url "add_address" %}" class="btn btn-success"> <i class="fa fa-plus"></i></a>
+                <a href="{% url "add_address" %}" class="btn btn-info"> <i class="fa fa-plus"></i></a>
                 </aside> <!-- col.// -->
 <aside class="col-lg-6">
-                    
+    
+
+   
+
     <div class="card">
         <div class="card-body">
             <table class="table table-borderless table-shopping-cart">
@@ -132,19 +136,49 @@
 <td> 
     <div class="price-wrap"> 
         <var class="price">${{cart_item.sub_total}}</var> 
-        <small class="text-muted"> ${{cart_item.poduct.price}} </small> 
+        <small class="text-muted"> ${{cart_item.product.price}} </small> 
     </div> <!-- price-wrap .// -->
 </td>
 
+
 </tr>
 {% endfor %}
+<tr>
+    <td>
+        <small class="text-muted"> Tax :${{tax}} </small> 
+        <var class="price"> Grand Total: ${{grand_total}}</var> 
+    </td>
+</tr>
 </tbody>
 </table>
+<input type="hidden" value="{{code}}" name="coupon">
 <button type="submit" class="btn btn-primary btn-block">Place Order</button>
 <a href="{% url "store" %}" class="btn btn-light btn-block">Continue Shopping</a>
 </form>
 </div> <!-- card-body.// -->
 </div> <!-- card.// -->
+
+
+<div class="card">
+    <div class="card-body">
+
+        {% include "home/alerts.html" %}
+        {% if not coupon_used %}
+        <div class="form-row ">
+            <div class="text-center col-lg-12">
+                <form action="{% url "checkout" %}" method="get">
+                    {% csrf_token %}
+                    <label for="" class="form-text">Coupon Code</label>
+                    {{coupon_form.code}}
+                    <button class="btn btn-success btn-block mt-3" type="submit">Redeem</button>
+                </form>
+            </div>
+        </div>
+            {% endif %}
+      
+    </div>
+</div>
+
 
 </aside> <!-- col.// -->
 

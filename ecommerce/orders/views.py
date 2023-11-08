@@ -137,10 +137,12 @@ def place_order(request, total=0, quantity = 0):
     
     grand_total = 0
     tax = 0
+    discount_price = 0
         
     for cart_item in cart_items:
         total += (cart_item.product.price * cart_item.quantity)
         quantity += cart_item.quantity
+        
         
     tax = (2 * total)/100
     grand_total = total + tax
@@ -165,6 +167,15 @@ def place_order(request, total=0, quantity = 0):
             data.tax = tax
             data.order_total = grand_total
             data.ip = request.META.get('REMOTE_ADDR')
+            try:
+                code = request.POST['coupon']
+                coupon_obj = Coupon.objects.get(code = code)
+                data.coupon = coupon_obj
+                discount_price = data.coupon.discount_price
+            except:
+                pass
+
+
             data.save()
 
             # Generate Order No
@@ -186,7 +197,8 @@ def place_order(request, total=0, quantity = 0):
                 'cart_items': cart_items,
                 'total' : total,
                 'tax':tax,
-                'grand_total': grand_total
+                'grand_total': grand_total - discount_price,
+                'discount': discount_price
             }
 
             return render(request, 'orders/payments.html', context)
@@ -213,6 +225,8 @@ def order_complete(request):
         subtotal = 0
         for i in ordered_products:
             subtotal += i.product_price * i.quantity
+
+        
         context ={
             'order':order,
             'ordered_products': ordered_products,
@@ -220,6 +234,7 @@ def order_complete(request):
             'transID' : payment.payment_id,
             'payment' : payment,
             'subtotal' :subtotal,
+            'grand_total':order.order_total - order.coupon.discount_price
         }
 
 

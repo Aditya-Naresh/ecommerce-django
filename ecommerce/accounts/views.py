@@ -45,6 +45,8 @@ def register(request):
             user.phone_number = phone_number
             user.save()
 
+            user_profile = UserProfile.objects.create(user=user)
+
             # User activation
             current_site = get_current_site(request)
             mail_subject = 'Account Activation'
