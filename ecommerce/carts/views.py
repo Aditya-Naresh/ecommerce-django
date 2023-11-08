@@ -220,9 +220,7 @@ def cart(request, total=0, quantity = 0 , cart_items = None):
 
 @login_required(login_url='login')
 def checkout(request, total=0, quantity = 0 , cart_items = None):
-    address = UserAddressBook.objects.get(user=request.user, status = True)
-    form = UserAddressForm(instance = address)
-    addresses = UserAddressBook.objects.filter(user = request.user)
+
     try:
         tax_rate = 2
         tax = 0
@@ -242,6 +240,16 @@ def checkout(request, total=0, quantity = 0 , cart_items = None):
     except ObjectDoesNotExist:
         pass
 
+    try:    
+        address = UserAddressBook.objects.get(user=request.user, status = True)
+        form = UserAddressForm(instance = address)
+        addresses = UserAddressBook.objects.filter(user=request.user)
+    except UserAddressBook.DoesNotExist:
+        form = UserAddressForm()
+        addresses = None
+    
+
+  
     context = {
         'total':total,
         'quantitiy' : quantity,
