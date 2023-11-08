@@ -35,6 +35,15 @@ def add_address(request):
 def edit_address(request, address_id):
     address = UserAddressBook.objects.get(id = address_id, user= request.user)
 
+
+    if request.method == 'POST':
+        form = UserAddressForm(request.POST, instance = address)
+
+        if form.is_valid():
+            form.save()
+
+            return redirect('checkout')
+
     form = UserAddressForm(instance = address)
 
 
