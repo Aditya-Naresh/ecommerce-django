@@ -50,8 +50,11 @@ $(document).ready(function() {
 	if($('[data-toggle="tooltip"]').length>0) {  // check if element exists
 		$('[data-toggle="tooltip"]').tooltip()
 	} // end if
-
-
+// pic change
+    // $('.thumb a').click(function(e){
+    //     e.preventDefault();
+    //     $('.mainImage img').attr('src', $(this).attr("href"));
+    //   })
 
 
     

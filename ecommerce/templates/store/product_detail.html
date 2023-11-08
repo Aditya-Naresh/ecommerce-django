@@ -8,25 +8,20 @@
         <div class="row no-gutters">
           <aside class="col-md-6">
             <article class="gallery-wrap">
-              <div class="img-big-wrap ">
-                <center>
-                  <img id="main-image" src="{{ single_product.image.url }}"  data-zoom-image="" />
-
-                </center>
+              <div class="img-big-wrap mainImage">
+                {% for img in product_gallery  %}
+                <center><img src="{{ img.image.url }}" class="p_img card-img-top image-{{img.id}}" id="image-{{img.id}}" data-zoom-image={{img.image.url}} ></center>
+                {% endfor %}
               </div> <!-- img-big-wrap.// -->
-            </article> <!-- gallery-wrap .end// -->
+              </article> <!-- gallery-wrap .end// -->
             <ul class="thumb">
               <li>
-                <a href="{{single_product.image.url}}" target="mainImage"><img src="{{ single_product.image.url }}" /></a>
-
-             
-              {% for i in product_gallery %}
-            
-                <a href="{{i.image.url}}" target="mainImage"><img src="{{i.image.url}}" alt="ProductImage"></a>
+                {% for i in product_gallery %}
+                <a href="{{i.image.url}}" target="mainImage"><img src="{{i.image.url}}" data-image={{i.id}} alt="Product Image" class="thumbnail"></a>
+                {% endfor %}
               </li>
-              {% endfor %}
-
             </ul>
+          </aside>
           </aside>
           <main class="col-md-6 border-left">
             <form action="{% url "add_cart" single_product.id %}" method="post">
@@ -180,4 +175,23 @@
       </div> <!-- row.// -->
     </div> <!-- container .// -->
   </section>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	
+  <script src="https://cdn.jsdelivr.net/gh/igorlino/elevatezoom-plus@1.2.3/src/jquery.ez-plus.js"></script>
+  <script>
+    $(document).ready(function () {
+
+      $('.p_img').ezPlus()
+
+      $('.p_img').addClass('hidden')
+      $('.p_img').first().removeClass('hidden').addClass('focused')
+      $(".thumbnail").on('click', function(e){
+        e.preventDefault()
+        var _img = $(this).data('image')
+        $(".p_img").addClass('hidden')
+        $("#image-" + _img).removeClass('hidden').addClass('focused')
+      })
+    })
+   
+  </script>
 {% endblock %}
