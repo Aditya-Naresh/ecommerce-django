@@ -9,6 +9,7 @@ from orders.models import Order
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
+from django.http import HttpResponseRedirect
 
 
 
@@ -241,23 +242,39 @@ def products(request):
 
 def edit_product(request, product_id):
 
-    product = Product.objects.get(id = product_id)
-
+    product = Product.objects.get(pk = product_id)
+    images = ProductGallery.objects.filter(product = product_id)
+    image_form = ImageForm()
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES, instance = product)
+        images = request.FILES.getlist('Images')
+
         if form.is_valid():
+            for image in images:
+                pic = ProductGallery.objects.create(
+                    product = product,
+                    image = image
+                )
             form.save()
+            
             return redirect('products')
 
     form = ProductForm(instance = product)
 
     context = {
-        'form':form
+        'form':form,
+        'image_form':image_form,
+        'images':images
     }
 
     return render(request, 'products/product_form.html',context)
 
 
+def delete_image(request, image_id):
+    image = ProductGallery.objects.get(id = image_id)
+    product_id = image.product.pk
+    image.delete()
+  
 
 
 # --------------------------------------------------------------------------------------------------------
@@ -271,12 +288,20 @@ def delete_product(request,product_id):
 def add_product(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
+        images = request.FILES.getlist('Images')
         if form.is_valid():
-            form.save()
+            product = form.save()
+            for image in images:
+                pic = ProductGallery.objects.create(
+                    product = product,
+                    image = image
+                )
             return redirect('products')
     form  = ProductForm()
+    image_form = ImageForm()
     context = {
-        'form':form
+        'form':form,
+        'image_form':image_form
     }
     return render(request,'products/product_form.html',context)
 

@@ -2,6 +2,8 @@ from django import forms
 from accounts.models import Account
 from store.models import *
 from category.models import Category
+from multiupload.fields import MultiImageField
+from store.models import ProductGallery
 
 class AdminForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput(attrs={
@@ -100,3 +102,12 @@ class VariationForm(forms.ModelForm):
         for field in self.fields:
             self.fields[field].widget.attrs['class'] = "form-control"
 
+
+
+class ImageForm(forms.ModelForm):
+    Images = MultiImageField(min_num=1, max_num=100, max_file_size=1024*1024*5)
+    
+
+    class Meta:
+        model = ProductGallery
+        exclude = ['image', 'product']
