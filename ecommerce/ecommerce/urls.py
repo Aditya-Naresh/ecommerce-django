@@ -28,7 +28,8 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('orders/', include('orders.urls')),
     path('wishlist/', include('wishlist.urls')),
-    path('admin/', include('useradmin.urls'))
+    path('admin/', include('useradmin.urls')),
+    path('addressbook/', include('addressbook.urls'))
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

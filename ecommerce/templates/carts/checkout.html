@@ -17,61 +17,91 @@
                             <div class="form-row">
                                 <div class="col form-group">
                                     <label for="">First Name</label>
-                                    <input type="text" name="first_name" class="form-control" required>
+                                    {{form.first_name}}
                                 </div>
                                 <div class="col form-group">
                                     <label for="">Last Name</label>
-                                    <input type="text" name="last_name" class="form-control" required>
+                                    {{form.last_name}}
                                 </div>
                               </div>
                             <div class="form-row">
                                 <div class="col form-group">
                                     <label for="">Email</label>
-                                    <input type="email" name="email" class="form-control" required>
+                                    {{form.email}}
                                 </div>
                                 <div class="col form-group">
                                     <label for="">Phone Number</label>
-                                    <input type="text" name="phone" class="form-control" required>
+                                    {{form.phone}}
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="col form-group">
                                     <label for="">Address Line 1</label>
-                                    <input type="text" name="address_line_1" class="form-control" required>
+                                    {{form.address_line_1}}
                                 </div>
                                 <div class="col form-group">
                                     <label for="">Address Line 2</label>
-                                    <input type="text" name="address_line_2" class="form-control" >
+                                    {{form.address_line_2}}
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="col form-group">
-                                    <label for="">City</label>
-                                    <input type="text" name="city" class="form-control" >
+                                    <label for=""> City </label>
+                                    {{form.city}}
                                 </div>
                                 <div class="col form-group">
                                     <label for="">State</label>
-                                    <input type="text" name="state" class="form-control" required>
+                                    {{form.state}}
                                 </div>
                                 <div class="col form-group">
                                     <label for="">Country</label>
-                                    <input type="text" name="country" class="form-control" required>
+                                    {{form.country}}
                                 </div>
                                 <div class="col form-group">
                                     <label for="">Pin Code</label>
-                                    <input type="number" name="pincode" class="form-control" required>
+                                    {{form.pincode}}
                                 </div>
 
                             </div>
                             <div class="form-row">
                                 <label for="">Order Note</label>
-                                <textarea name="order_note" id="" class="form-control" rows="2"></textarea>
+                                {{form.order_note}}
                             </div>
-                        </div>
                     </div> <!-- card.// -->
 
+                    <div class="row">
+                        {% for add in addresses %}
+
+                            <div class="card {% if add.status %} border-secondary shadow {% endif %} address{{add.id}} address col-lg-5 ml-4">
+                                <div class="card-body">
+                                    {{add.first_name}} {{add.last_name}} <hr>
+                                    {{add.address_line_1}}
+                                    {{add.address_line_2}}
+                                    {{add.city}}, {{add.state}}
+                                    {{add.country}}, {{add.pincode}}
+                                    <b>Phone:</b>{{add.phone}}
+                                    <b>email:</b>{{add.email}}
+                                </div>
+                                {% if add.status %}
+                                <div class="card-footer">
+                                    <i class="fa fa-check-circle text-success check{{add.id}} check"></i>
+                                    <button style="display: none;" data-address="{{add.id}}" class="btn btn-info btn-sm activate-address actbtn actbtn{{add.id}}">Activate</button>
+                                    <a href="" class="float-right"><i class="fa fa-edit"></i></a>
+                                </div>
+                        {% else %}
+                        <div class="card-footer">
+                            <i class="fa fa-check-circle text-success check{{add.id}} check" style="display: none;"></i>
+                            <a href="{% url "activate" add.id %}" class="btn btn-info"> Activate </a>
+                            <a href="" class="float-right"><i class="fa fa-edit"></i></a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    {% endfor %}
+                </div>
+                <a href="{% url "add_address" %}" class="btn btn-success"> <i class="fa fa-plus"></i></a>
                 </aside> <!-- col.// -->
-                <aside class="col-lg-6">
+<aside class="col-lg-6">
                     
     <div class="card">
         <div class="card-body">

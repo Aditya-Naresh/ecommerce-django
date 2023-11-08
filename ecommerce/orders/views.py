@@ -229,3 +229,21 @@ def order_complete(request):
 
     return render(request, 'orders/order_complete.html', context)
 
+
+
+
+
+
+
+
+
+
+
+
+
+def cancel_order(request,order_id):
+    order = Order.objects.get(id = order_id, user=request.user )
+
+    order.status = 'Cancelled'
+    order.save()
+    return redirect('my_orders')

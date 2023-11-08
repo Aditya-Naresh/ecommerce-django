@@ -5,6 +5,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required 
 from django.http import HttpResponse
 from wishlist.models import Wishlist
+from addressbook.forms import UserAddressForm
+from addressbook.models import UserAddressBook
 # Create your views here.
 
 def _cart_id(request):
@@ -218,6 +220,9 @@ def cart(request, total=0, quantity = 0 , cart_items = None):
 
 @login_required(login_url='login')
 def checkout(request, total=0, quantity = 0 , cart_items = None):
+    address = UserAddressBook.objects.get(user=request.user, status = True)
+    form = UserAddressForm(instance = address)
+    addresses = UserAddressBook.objects.filter(user = request.user)
     try:
         tax_rate = 2
         tax = 0
@@ -242,7 +247,12 @@ def checkout(request, total=0, quantity = 0 , cart_items = None):
         'quantitiy' : quantity,
         'cart_items' : cart_items,
         'tax' :tax,
-        'grand_total':grand_total
+        'grand_total':grand_total,
+        'form':form,
+        'addresses': addresses,
     }
 
     return render(request, 'carts/checkout.html', context)
+
+
+
