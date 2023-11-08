@@ -41,5 +41,8 @@ urlpatterns = [
 
 # Orders-----------------------------------------------------------------------------------------------------------------------
     path('orders', views.orders, name='orders'),
-    path('ship/<int:order_id>', views.ship, name='ship')
+    path('ship/<int:order_id>', views.ship, name='ship'),
+
+
+    path('delete_image/<int:image_id>', views.delete_image, name='delete_image')
 ]
