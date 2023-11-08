@@ -273,7 +273,12 @@ def edit_product(request, product_id):
 def delete_image(request, image_id):
     image = ProductGallery.objects.get(id = image_id)
     product_id = image.product.pk
+
+    url = reverse('edit_product', kwargs={'product_id': product_id})
+
     image.delete()
+
+    return redirect(url)
   
 
 
