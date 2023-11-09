@@ -9,9 +9,13 @@
           <aside class="col-md-6">
             <article class="gallery-wrap">
               <div class="img-big-wrap mainImage">
+                {% if product_gallery %}
                 {% for img in product_gallery  %}
                 <center><img src="{{ img.image.url }}" class="p_img card-img-top image-{{img.id}}" id="image-{{img.id}}" data-zoom-image={{img.image.url}} ></center>
                 {% endfor %}
+                {% else %}
+                <center><img src="{{ single_product.image.url }}" class="p_img card-img-top image-{{single_product.id}}" id="image-{{single_product.id}}" data-zoom-image={{single_product.image.url}} ></center>
+                {% endif %}
               </div> <!-- img-big-wrap.// -->
               </article> <!-- gallery-wrap .end// -->
             <ul class="thumb">
@@ -94,6 +98,8 @@
             <h5>Write Your Review</h5>
             <div>
               <!--Rating Stars-->
+              {% if user.is_authenticated %}
+              {% if orderproduct %}
               <label for="">How do you rate this product?</label>
               <br>
               <div class="rate">
@@ -116,8 +122,6 @@
               Review
               <textarea name="review" class="form-control"  rows="4"></textarea>
               <br>
-              {% if user.is_authenticated %}
-              {% if orderproduct %}
               <input type="submit" value="Submit Review" class="btn btn-primary">
               {% else %}
               <p>You must purchase this produt to post a review</p>
