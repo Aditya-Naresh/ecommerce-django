@@ -197,6 +197,7 @@ def cart(request, total=0, quantity = 0 , cart_items = None):
     tax = 0
     grand_total =0
     discount = 0
+    coupon = None
     try:
         if request.user.is_authenticated:
             cart_items = CartItem.objects.filter(user = request.user, is_active = True)
@@ -209,6 +210,7 @@ def cart(request, total=0, quantity = 0 , cart_items = None):
             try:        
                 discount = cart_item.cart.coupon.discount_price
                 coupon_used = True
+                coupon = cart_item.cart.coupon
             except:
                 pass
         tax = (tax_rate * total)/100    
@@ -258,8 +260,15 @@ def checkout(request, total=0, quantity = 0 , cart_items = None):
             quantity += cart_item.quantity
 
         tax = (tax_rate * total)/100         
-        grand_total = total + tax - discount_price
- 
+        grand_total = total + tax 
+
+        if coupon_obj is not None:
+            if grand_total > coupon_obj.minimum_amount:
+                grand_total -= discount_price
+            else:
+                coupon_used = False
+                messages.warning(request, 'You should purchase more than $'+ str(coupon_obj.minimum_amount) +' to use this coupon')
+    
     except ObjectDoesNotExist:
         pass
 
