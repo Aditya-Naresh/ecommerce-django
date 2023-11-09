@@ -144,8 +144,11 @@
 </tr>
 {% endfor %}
 <tr>
-    <td>
-        <small class="text-muted"> Tax :${{tax}} </small> 
+    <td colspan="2">
+        <small class="text-muted"> Tax :${{tax}} </small> <br>
+        {% if discount %}
+        <small class="text-muted"> discount :-${{discount}} ({{code}}) </small> 
+        {% endif %}
         <var class="price"> Grand Total: ${{grand_total}}</var> 
     </td>
 </tr>

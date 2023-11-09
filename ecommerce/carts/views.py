@@ -208,8 +208,9 @@ def cart(request, total=0, quantity = 0 , cart_items = None):
             quantity += cart_item.quantity
             try:        
                 discount = cart_item.cart.coupon.discount_price
+                coupon_used = True
             except:
-                discount = 0
+                pass
         tax = (tax_rate * total)/100    
         grand_total = total + tax - discount
     except ObjectDoesNotExist:
@@ -220,7 +221,8 @@ def cart(request, total=0, quantity = 0 , cart_items = None):
         'quantitiy' : quantity,
         'cart_items' : cart_items,
         'tax' :tax,
-        'grand_total':grand_total
+        'grand_total':grand_total,
+       
     }
         
     return render(request, "carts/cart.html", context)
@@ -287,6 +289,7 @@ def checkout(request, total=0, quantity = 0 , cart_items = None):
         'coupon_form':coupon_form,
         'coupon_used':coupon_used,
         'code' :code,
+        'discount':discount_price
     }
 
     return render(request, 'carts/checkout.html', context)
