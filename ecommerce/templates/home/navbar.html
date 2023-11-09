@@ -37,6 +37,11 @@
 
             <li><a href="#" class="nav-link"> <i class="fa fa-phone"></i> Call us </a></li>
 
+            {% if user.is_authenticated %}
+            <li><a href="{% url 'useradmin' %}" class="nav-link"> <i class="fas fa-user-tie"></i> Admin </a></li>
+            {% endif %}
+
+
         </ul> <!-- list-inline //  -->
 
       </div> <!-- navbar-collapse .// -->

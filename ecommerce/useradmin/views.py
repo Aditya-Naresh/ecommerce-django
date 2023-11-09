@@ -10,7 +10,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 from django.http import HttpResponseRedirect
-
+from orders.models import *
 
 
 
@@ -384,7 +384,7 @@ def add_variation(request):
 
 def orders(request):
     items_per_page = 15
-    p = Paginator(Order.objects.all(), items_per_page)
+    p = Paginator(Order.objects.all().order_by('-created_at'), items_per_page)
     page = request.GET.get('page')
     data = p.get_page(page)
 
@@ -393,7 +393,7 @@ def orders(request):
     }
     return render(request,'orders/orders.html', context)
 
-
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def ship(request, order_id):
     order = Order.objects.get(id = order_id)
@@ -412,3 +412,20 @@ def ship(request, order_id):
     send_mail.send()
 
     return redirect('orders')
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def order_detail(request, order_id):
+    order = Order.objects.get(id = order_id)
+    products = OrderProduct.objects.filter(order = order)
+
+    total_price = order.order_total
+    if order.coupon:
+        total_price -= order.coupon.discount_price
+
+    context = {
+        'order': order,
+        'products': products,
+        'total_price': total_price
+    }
+    return render(request, 'orders/order_detail.html', context)

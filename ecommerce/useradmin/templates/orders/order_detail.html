@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    <div class="container-fluid">
+        <h3> <strong>Order Number:</strong> {{order.order_number}} <span class="float-right">Total Price: <strong>{{total_price | floatformat:2}} </strong></span> </h3>
+    <table class="table bg-white">
+        <thead class="bg-info">
+            <tr class="text-white">
+                <th scope="col">Product Name</th>
+                <th>Product Image</th>
+                <th> Quantity</th>
+                <th>Unit Price</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>
+                    {{product.product}}
+                </td>
+                <td>
+                    <img src="{{product.product.image.url}}" alt="" height="50" width="50" style="border: 1px solid gray;">
+                </td>
+                <td>
+                    {{product.quantity}}
+                </td>
+                <td>
+                    {{product.product_price | floatformat:2}}
+                </td>
+                <td>
+                    {{product.quantity}}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+   
+</div>
+               
+{% endblock content %}

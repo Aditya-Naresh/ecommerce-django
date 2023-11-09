@@ -17,15 +17,15 @@
         <tbody>
             {% for i in data %}
             <tr>
-                <th scope="row"> {{i.order_number}} </th>
+                <th scope="row"> <a href="{% url 'order_detail' i.id %}">{{i.order_number}} </a></th>
                 <td> {{i.payment.status}} 
                 </td>
-                <td>$ {{i.order_total}}</td>
+                <td>$ {{i.order_total}} </td>
                 <td>
                     {{i.status}}
                 </td>
                 <td>
-                    ${{i.created_at}}
+                    {{i.created_at}}
                 </td>
                <td>
                 {% if i.status == 'New' %}
