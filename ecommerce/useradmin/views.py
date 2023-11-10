@@ -422,10 +422,47 @@ def order_detail(request, order_id):
     total_price = order.order_total
     if order.coupon:
         total_price -= order.coupon.discount_price
+    subtotal = 0
+    for product in products:
+        subtotal += product.quantity * product.product_price
+
 
     context = {
         'order': order,
         'products': products,
-        'total_price': total_price
+        'total_price': total_price,
+        'subtotal':subtotal
     }
     return render(request, 'orders/order_detail.html', context)
+
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def cancelled_orders(request):
+    items_per_page = 15
+    p = Paginator(Order.objects.filter(status = 'Cancelled').order_by('-created_at'), items_per_page)
+    page = request.GET.get('page')
+    data = p.get_page(page)
+
+    context = {
+        'data':data
+    }
+    return render(request, 'orders/cancelled_orders.html', context)
+
+# -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def restock(request, order_id):
+    order = Order.objects.get(id = order_id)
+    order_products = OrderProduct.objects.filter(order = order)
+
+    for order_product in order_products:
+        product = order_product.product
+        print(product.stock)
+        product.stock += order_product.quantity
+
+        product.save()
+        print(product.stock)
+
+    order.restock = True
+    order.save()
+
+    return redirect('cancelled_orders')

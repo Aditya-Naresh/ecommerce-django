@@ -43,6 +43,8 @@ urlpatterns = [
 # Orders-----------------------------------------------------------------------------------------------------------------------
     path('orders', views.orders, name='orders'),
     path('ship/<int:order_id>', views.ship, name='ship'),
-    path('order_detail/<int:order_id>', views.order_detail, name='order_detail')
+    path('order_detail/<int:order_id>', views.order_detail, name='order_detail'),
+    path('cancelled_orders', views.cancelled_orders, name='cancelled_orders'),
+    path('restock/<int:order_id>', views.restock, name='restock')
 
 ]

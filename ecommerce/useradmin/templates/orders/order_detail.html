@@ -11,6 +11,7 @@
                 <th> Quantity</th>
                 <th>Unit Price</th>
                 <th>Quantity</th>
+                <th>Price</th>
             </tr>
         </thead>
         <tbody>
@@ -31,8 +32,44 @@
                 <td>
                     {{product.quantity}}
                 </td>
-            </tr>
+                <td> {% widthratio product.quantity 1 product.product_price %} </td>
+          </tr>
             {% endfor %}
+            <tr>
+                <td colspan="5" class="text-center">
+                    <b>Subtotal:</b>
+                </td>
+                <td>
+                    {{subtotal | floatformat:2}}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="5" class="text-center">
+                    <b>Tax:</b>
+                </td>
+                <td>
+                    {{order.tax | floatformat:2}}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="5" class="text-center">
+                    <p>
+                        <b>Grand Total:</b>
+                    </p>
+                    <p>
+                        <b>Discount:</b>
+                    </p>
+                        
+                </td>
+                <td>
+                    <p> 
+                        {{order.order_total | floatformat:2}}
+                    </p>
+                    <p>
+                        -{{order.coupon.discount_price}}
+                    </p>
+                </td>
+            </tr>
         </tbody>
     </table>
    
