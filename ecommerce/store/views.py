@@ -9,6 +9,9 @@ from .forms import ReviewForm
 from django.contrib import messages
 from orders.models import OrderProduct
 from wishlist.models import Wishlist
+from django.http import JsonResponse
+from django.template.loader import render_to_string
+
 # Create your views here.
 
 def store(request, category_slug = None, brand_slug = None):
@@ -43,16 +46,17 @@ def store(request, category_slug = None, brand_slug = None):
         reviews = ReviewRating.objects.filter(product_id = product.id, status = True)
 
 
+    
+
     context = {
             'products':paged_products,
             'product_count':product_count,
-            'reviews': reviews
+            'reviews': reviews,
         }    
     return render(request, 'store/store.html', context)
 
 
-
-
+# ============================================================= PRODUCT DETAIL ======================================================================================
 
 
 def product_detail(request, brand_slug, product_slug):
@@ -84,7 +88,7 @@ def product_detail(request, brand_slug, product_slug):
     return render(request, 'store/product_detail.html', context)
 
 
-
+#========================================== SEARCH =================================================================================================================
 
 def search(request):
 
@@ -105,7 +109,7 @@ def search(request):
     }
     return render(request, 'store/store.html', context)
 
-
+# =================================================  REVIEWS =========================================================================================================
 
 def submit_review(request, product_id):
     url = request.META.get('HTTP_REFERER')
@@ -130,3 +134,52 @@ def submit_review(request, product_id):
                 data.save()
                 messages.success(request, "Thank you! Your review has been submitted")
                 return redirect(url)
+            
+# ============================================== BRAND LIST =======================================================================================================
+def brand_list(request):
+    brands = Brand.objects.all()
+    context = {
+        'brands' : brands
+    }
+    return render(request, 'store/brand_list.html', context)
+
+
+
+# =================================================== CATEGORY LIST =================================================================================================
+def category_list(request):
+    categories = Category.objects.all()
+    context = {
+        'categories':categories
+    }
+    return render(request, 'store/category_list.html', context)
+
+
+
+# ==================================================== FILTER DATA ===========================================================================================================
+
+def filter_data(request):
+    colors=request.GET.getlist('color[]')
+    categories=request.GET.getlist('category[]')
+    brands=request.GET.getlist('brand[]')
+    sizes=request.GET.getlist('size[]')
+    minPrice = request.GET['minPrice']
+    maxPrice = request.GET['maxPrice']
+    allProducts = Product.objects.all().order_by('-id')
+
+    allProducts = allProducts.filter(price__gte = minPrice)
+    allProducts = allProducts.filter(price__lte = maxPrice)
+    if len(colors) > 0:
+        allProducts = allProducts.filter(variation__variation_value__in=colors).distinct()
+
+    if len(sizes) > 0:
+        allProducts = allProducts.filter(variation__variation_value__in=sizes).distinct()
+
+    if len(categories) > 0:
+        allProducts = allProducts.filter(category__id__in =categories).distinct()
+
+    if len(brands) > 0:
+        allProducts = allProducts.filter(brand__id__in =brands).distinct()
+
+        
+    t = render_to_string('ajax/product-list.html', {'products': allProducts })
+    return JsonResponse({'data' : t})

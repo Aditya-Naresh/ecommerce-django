@@ -76,12 +76,30 @@
                             <div class="card {% if add.status %} border-secondary shadow {% endif %} address{{add.id}} address col-lg-5 ml-4">
                                 <div class="card-body">
                                     {{add.first_name}} {{add.last_name}} <hr>
-                                    {{add.address_line_1}}
-                                    {{add.address_line_2}}
-                                    {{add.city}}, {{add.state}}
-                                    {{add.country}}, {{add.pincode}}
-                                    <b>Phone:</b>{{add.phone}}
-                                    <b>email:</b>{{add.email}}
+                                    <p>
+
+                                        {{add.address_line_1}}
+                                    </p>
+                                    <p>
+
+                                        {{add.address_line_2}}
+                                    </p>
+                                    <p>
+
+                                        {{add.city}}, {{add.state}}
+                                    </p>
+                                    <p>
+
+                                        {{add.country}}, {{add.pincode}}
+                                    </p>
+                                    <p>
+
+                                        <b>Phone:</b>{{add.phone}}
+                                    </p>
+                                    <p>
+
+                                        <b>email:</b>{{add.email}}
+                                    </p>
                                 </div>
                                 {% if add.status %}
                                 <div class="card-footer">

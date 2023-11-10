@@ -35,15 +35,14 @@ def add_cart(request, product_id):
             for item in request.POST:
                 key = item
                 value = request.POST[key]
-
                 try:
-                    variation = Variation.objects.get(variation_category__iexact = key, variation_value__iexact = value)
+                    variation = Variation.objects.get(product = product, variation_category__iexact = key, variation_value__iexact = value)
                     product_variation.append(variation)
                 except:
                     pass
 
 
-      
+        print(product_variation)
         is_cart_item_exists = CartItem.objects.filter(product = product, user = current_user)
         if is_cart_item_exists:
             cart_item = CartItem.objects.filter(product= product, user = current_user)

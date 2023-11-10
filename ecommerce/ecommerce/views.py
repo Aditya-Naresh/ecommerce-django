@@ -5,7 +5,7 @@ from django.views.decorators.cache import never_cache
 # Create your views here.
 @never_cache
 def home(request):
-    products = Product.objects.filter(is_available = True).order_by('created_date')
+    products = Product.objects.filter(is_available = True, is_featured = True).order_by('created_date')
     review = None
     for single_product in products:
         review = ReviewRating.objects.filter(product_id = single_product.id, status = True)

@@ -79,7 +79,7 @@ class ProductForm(forms.ModelForm):
     
     class Meta:
         model = Product
-        fields = ('product_name','description','price','image','stock','is_available','brand','category')
+        fields = ('product_name','description','price','image','stock','is_available','brand','category', 'is_featured')
     
     def __init__(self, *args, **kwargs):
         super(ProductForm, self).__init__(*args, **kwargs)
@@ -105,7 +105,7 @@ class VariationForm(forms.ModelForm):
 
 
 class ImageForm(forms.ModelForm):
-    Images = MultiImageField(min_num=1, max_num=100, max_file_size=1024*1024*5)
+    Images = MultiImageField(min_num=0, max_num=100, max_file_size=1024*1024*5)
     
 
     class Meta:
