@@ -164,6 +164,8 @@ def filter_data(request):
     sizes=request.GET.getlist('size[]')
     minPrice = request.GET['minPrice']
     maxPrice = request.GET['maxPrice']
+    sort = request.GET['sort']
+
     allProducts = Product.objects.all().order_by('-id')
 
     allProducts = allProducts.filter(price__gte = minPrice)
@@ -180,6 +182,8 @@ def filter_data(request):
     if len(brands) > 0:
         allProducts = allProducts.filter(brand__id__in =brands).distinct()
 
+    if sort:
+        allProducts = allProducts.order_by(sort)
         
     t = render_to_string('ajax/product-list.html', {'products': allProducts })
     return JsonResponse({'data' : t})

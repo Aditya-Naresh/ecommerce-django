@@ -1,48 +1,49 @@
 $(document).ready(function(){
-    $('.ajaxLoader').hide()
+    $('.ajaxLoader').hide();
+    
+    // Initialize the selectedSortValue to an empty string.
+    var selectedSortValue = '';
+
+    // Event handler for the "Sort By" dropdown.
+    $('#sort-list').on('change', function(){
+        selectedSortValue = $(this).val();
+        filterAndSortProducts(selectedSortValue); // Pass the selectedSortValue to the function.
+    });
+
+    // Event handler for other filters.
     $(".filter-checkbox, #priceFilterBtn").on('click', function(){
-        var _filterObj = {}
-        var _minPrice = $('#maxPrice').attr('min')
-        var _maxPrice = $('#maxPrice').val()
-        _filterObj.minPrice = _minPrice
-        _filterObj.maxPrice = _maxPrice
-        $('.filter-checkbox').each(function(index,ele){
-            var _filterVal = $(this).val()
-            var _filterKey = $(this).data('filter')
+        filterAndSortProducts(selectedSortValue); // Pass the selectedSortValue to the function.
+    });
+
+    function filterAndSortProducts(sortValue) {
+        var _filterObj = {};
+        var _minPrice = $('#maxPrice').attr('min');
+        var _maxPrice = $('#maxPrice').val();
+        _filterObj.minPrice = _minPrice;
+        _filterObj.maxPrice = _maxPrice;
+        _filterObj.sort = sortValue; // Use the passed sortValue.
+
+        $('.filter-checkbox').each(function(index, ele){
+            var _filterVal = $(this).val();
+            var _filterKey = $(this).data('filter');
             _filterObj[_filterKey] = Array.from(document.querySelectorAll('input[data-filter='+ _filterKey +']:checked')).map(function(el){
                 return el.value;
-            })
-        })
+            });
+        });
+
         // Ajax 
         $.ajax({
-            url:'/store/filter_data',
-            data:_filterObj,
+            url: '/store/filter_data',
+            data: _filterObj,
             dataType: 'json',
-            beforeSend:function(){
-                $('ajaxLoader').show()
+            beforeSend: function(){
+                $('.ajaxLoader').show();
             },
-            success:function(res){
+            success: function(res){
                 console.log(res);
-                $("#filteredProducts").html(res.data)
-                $('ajaxLoader').hide()
+                $("#filteredProducts").html(res.data);
+                $('.ajaxLoader').hide();
             }
-        })
-        // end Ajax
-    })
-
-
-        // Filter Product According to the Price
-        $("#maxPrice").on('blur', function(){
-            var _min = $(this).attr('min')
-            var _max = $(this).attr('max')
-            var _value = $(this).val()
-            console.log(_value, _min, _max);
-            if(_value < parseInt(_min) || _value > parseInt(_max)){
-                alert("Price should be " + _min + "-" + _max)
-                $(this).val(_min);
-                $(this).focus();
-                $('#rangeInput').val(_min)
-                return false;
-            }
-        })
-})
+        });
+    }
+});
