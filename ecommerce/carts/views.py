@@ -3,12 +3,14 @@ from store.models import *
 from .models import *
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required 
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from wishlist.models import Wishlist
 from addressbook.forms import UserAddressForm
 from addressbook.models import UserAddressBook
 from django.contrib import messages
 from coupon.forms import CouponForm
+from django.template.loader import render_to_string
+
 
 # Create your views here.
 
@@ -196,7 +198,6 @@ def cart(request, total=0, quantity = 0 , cart_items = None):
     tax = 0
     grand_total =0
     discount = 0
-    coupon = None
     try:
         if request.user.is_authenticated:
             cart_items = CartItem.objects.filter(user = request.user, is_active = True)
@@ -304,3 +305,49 @@ def checkout(request, total=0, quantity = 0 , cart_items = None):
 
 
 
+def update_cart(request):
+    cart_item_id = request.POST.get('cart_item_id')
+    new_quantity = request.POST.get('new_quantity')
+
+    # Update the cart item's quantity
+
+    cart_item = CartItem.objects.get(id=cart_item_id)
+    cart_item.quantity = new_quantity
+    cart_item.save()
+    total = 0
+    quantity = 0
+    tax_rate = 2
+    tax = 0
+    grand_total =0
+    discount = 0
+    try:
+        if request.user.is_authenticated:
+            cart_items = CartItem.objects.filter(user = request.user, is_active = True)
+        else:
+            cart = Cart.objects.get(cart_id  = _cart_id(request))
+            cart_items = CartItem.objects.filter(cart=cart, is_active = True)
+        for cart_item in cart_items:
+            total += (cart_item.product.price * cart_item .quantity)
+            quantity += cart_item.quantity
+            try:        
+                discount = cart_item.cart.coupon.discount_price
+                coupon_used = True
+                coupon = cart_item.cart.coupon
+            except:
+                pass
+        tax = (tax_rate * total)/100    
+        grand_total = total + tax - discount
+    except ObjectDoesNotExist:
+        pass
+
+    context = {
+        'total':total,
+        'quantitiy' : quantity,
+        'cart_items' : cart_items,
+        'tax' :tax,
+        'grand_total':grand_total,
+       
+    }
+    t = render_to_string('ajax/cart-quantity.html',context)
+    return JsonResponse({'data': t})
+   
