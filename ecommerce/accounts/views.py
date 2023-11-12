@@ -16,7 +16,7 @@ from carts.models import Cart, CartItem
 from django.views.decorators.cache import never_cache
 from orders.models import Order, OrderProduct
 
-
+from addressbook.models import UserAddressBook
 
 import requests
 
@@ -350,3 +350,14 @@ def order_detail(request,order_id):
         'subtotal':subtotal
     }
     return render(request, 'dashboard/order_detail.html', context)
+
+
+
+# =========================== Dashboard Addresses =======================================================
+
+def addressbook(request):
+    addresses = UserAddressBook.objects.filter(user = request.user)
+    context = {
+        'addresses':addresses
+    }
+    return render(request, 'dashboard/addressbook.html', context)
