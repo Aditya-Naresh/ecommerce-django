@@ -35,13 +35,15 @@ def render_to_pdf(template_path, context):
 
 def download_invoice(request, order_id):
     order = Order.objects.get(id=order_id)
+    discount = 0
+    if order.coupon:
+        discount  = order.coupon.discount_price
     ordered_products = OrderProduct.objects.filter(order_id=order.id)
     payment = Payment.objects.get(payment_id=order.payment.payment_id)
     subtotal = 0
-
+   
     for item in ordered_products:
         subtotal += item.product_price * item.quantity
-
 
     context = {
         'order': order,
@@ -49,7 +51,45 @@ def download_invoice(request, order_id):
         'transID': payment.payment_id,
         'ordered_products': ordered_products,
         'subtotal': subtotal,
-        'status': payment.status
+        'status': payment.status,
+        'discount': discount,
+        'grand_total': order.order_total
+    }
+
+    template_path = 'orders/invoice.html'  # Replace with the path to your HTML template
+    pdf_response = render_to_pdf(template_path, context)
+
+    if pdf_response:
+        response = HttpResponse(pdf_response.read(), content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename=invoice_{order.order_number}.pdf'
+        return response
+
+    # Handle the case where PDF generation fails
+    return HttpResponse('PDF generation failed', status=500)
+
+# --------------------------------------------------------------------------------------------------------------'
+
+
+def cod_invoice(request, order_id):
+    order = Order.objects.get(id=order_id)
+    discount = 0
+    if order.coupon:
+        discount  = order.coupon.discount_price
+    ordered_products = OrderProduct.objects.filter(order_id=order.id)
+    subtotal = 0
+   
+    for item in ordered_products:
+        subtotal += item.product_price * item.quantity
+
+    context = {
+        'order': order,
+        'order_number': order.order_number,
+        'transID': "N.A",
+        'ordered_products': ordered_products,
+        'subtotal': subtotal,
+        'status': "NOT COMPLETED",
+        'discount': discount,
+        'grand_total': order.order_total -discount
     }
 
     template_path = 'orders/invoice.html'  # Replace with the path to your HTML template
@@ -278,7 +318,6 @@ def cancel_order(request,order_id):
 def cash_on_delivery(request):
     order_number = request.POST['order_number']
     order = Order.objects.get(user = request.user, is_ordered = False, order_number = order_number )
-
     payment = Payment(
         user = request.user,
         payment_method = "Cash On Delivery",
@@ -334,6 +373,9 @@ def cash_on_delivery(request):
     subtotal = 0
     for i in ordered_products:
         subtotal += i.product_price * i.quantity
+    grand_total = order.order_total
+    if order.coupon:
+        grand_total -= order.coupon.discount_price
     context ={
             'order':order,
             'ordered_products': ordered_products,
@@ -341,7 +383,7 @@ def cash_on_delivery(request):
             'transID' : payment.payment_id,
             'payment' : payment,
             'subtotal' :subtotal,
-            'grand_total':order.order_total 
+            'grand_total': grand_total
         }
     
     return render(request, 'orders/cod_complete.html', context)

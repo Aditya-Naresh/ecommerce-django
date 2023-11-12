@@ -109,7 +109,12 @@
             </div>
             <!-- End .panel -->
             <div class="text-center">
+                {% if '/cash_on_delivery' in request.path %}
+                <a href="{% url "cod_invoice" order.id %}" class="btn btn-outline-secondary">Download Invoice</a> <br> 
+                {% else %}
                 <a href="{% url "download_invoice" order.id %}" class="btn btn-outline-secondary">Download Invoice</a> <br> 
+                {% endif %}
+                
             
             </div>
         </div>
