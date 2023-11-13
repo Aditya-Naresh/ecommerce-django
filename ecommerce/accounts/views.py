@@ -23,8 +23,18 @@ import requests
 
 
 
-def register(request):
+def register(request, *args, **kwargs):
+    code = str(kwargs.get('ref_code'))
+    try:
+        profile = UserProfile.objects.get(code = code)
+        request.session['ref_profile'] = profile.id
+        print['id', UserProfile.id]
+    except:
+        pass
+    print(request.session.get_expiry_date)
     if request.method == 'POST':
+        profile_id = request.session.get('ref_profile')
+
         form = RegistrationForm(request.POST)
 
         if form.is_valid():
@@ -44,9 +54,16 @@ def register(request):
 
             user.phone_number = phone_number
             user.save()
+            instance = user
 
-            user_profile = UserProfile.objects.create(user=user)
-
+            if profile_id is not None:
+                recommended_by_profile = UserProfile.objects.get(id=profile_id)
+                registered_user = Account.objects.get(id = instance.id)
+                registered_profile = UserProfile.objects.get(user = registered_user)
+                registered_profile.recommended_by = recommended_by_profile.user
+                registered_profile.save()
+            else:
+                form.save()
             # User activation
             current_site = get_current_site(request)
             mail_subject = 'Account Activation'

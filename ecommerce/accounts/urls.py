@@ -18,4 +18,7 @@ urlpatterns = [
     path('order_detail/<int:order_id>/', views.order_detail, name='order_detail'),
     path('addressbook', views.addressbook, name='addressbook'),
 
+    # Reference code
+    path('register/<str:ref_code>/', views.register, name='register'),
+
    ]

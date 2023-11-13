@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-
+from .utils import generate_ref_code
 
 class MyAccountManager(BaseUserManager):
     def create_user(self, first_name, last_name, username, email, password = None):
@@ -86,6 +86,16 @@ class UserProfile(models.Model):
     state = models.CharField(blank=True, max_length=20)
     country = models.CharField(blank=True, max_length=20)
     pincode = models.CharField(blank=True, max_length=15)
+    code = models.CharField(max_length=12, blank=True)
+    recommended_by = models.ForeignKey(Account, on_delete=models.SET_NULL, blank=True, null=True, related_name='ref_by')
+    
+    
+
+    def save(self,*args, **kwargs):
+        if self.code == "":
+            code = generate_ref_code()
+            self.code = code
+        super().save(*args, **kwargs)
 
     def __str__(self) -> str:
         return self.user.first_name
