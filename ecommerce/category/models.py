@@ -1,7 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
-
+from offers.models import CategoryOffer
 
 # Create your models here.
 class Category(models.Model):
@@ -9,6 +9,7 @@ class Category(models.Model):
     slug = models.SlugField(max_length=100, unique=True, blank=True)
     description = models.TextField(max_length=255)
     cat_image = models.ImageField(upload_to="photos/categories", blank=True,)
+    offer = models.ForeignKey(CategoryOffer, on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
         verbose_name = "Category"

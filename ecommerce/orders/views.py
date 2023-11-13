@@ -135,7 +135,7 @@ def payments(request):
         orderproduct.user_id = request.user.id
         orderproduct.product_id = item.product_id
         orderproduct.quantity = item.quantity
-        orderproduct.product_price = item.product.price
+        orderproduct.product_price = item.product.discounted_price
         orderproduct.ordered = True
         orderproduct.save()
 
@@ -191,7 +191,7 @@ def place_order(request, total=0, quantity = 0):
     discount_price = 0
         
     for cart_item in cart_items:
-        total += (cart_item.product.price * cart_item.quantity)
+        total += (cart_item.product.discounted_price * cart_item.quantity)
         quantity += cart_item.quantity
         
         
@@ -277,6 +277,11 @@ def order_complete(request):
         for i in ordered_products:
             subtotal += i.product_price * i.quantity
 
+        grand_total = order.order_total
+        if order.coupon:
+            grand_total -= order.coupon.discount_price
+            
+
         
         context ={
             'order':order,
@@ -285,7 +290,7 @@ def order_complete(request):
             'transID' : payment.payment_id,
             'payment' : payment,
             'subtotal' :subtotal,
-            'grand_total':order.order_total - order.coupon.discount_price
+            'grand_total':grand_total 
         }
 
 
@@ -341,7 +346,7 @@ def cash_on_delivery(request):
         orderproduct.user_id = request.user.id
         orderproduct.product_id = item.product_id
         orderproduct.quantity = item.quantity
-        orderproduct.product_price = item.product.price
+        orderproduct.product_price = item.product.discounted_price
         orderproduct.ordered = True
         orderproduct.save()
 

@@ -205,7 +205,7 @@ def cart(request, total=0, quantity = 0 , cart_items = None):
             cart = Cart.objects.get(cart_id  = _cart_id(request))
             cart_items = CartItem.objects.filter(cart=cart, is_active = True)
         for cart_item in cart_items:
-            total += (cart_item.product.price * cart_item .quantity)
+            total += (cart_item.product.discounted_price * cart_item .quantity)
             quantity += cart_item.quantity
             try:        
                 discount = cart_item.cart.coupon.discount_price

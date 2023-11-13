@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'useradmin',
     'addressbook',
     'coupon',
+    'offers',
 ]
 
 MIDDLEWARE = [

@@ -4,6 +4,9 @@ from django.urls import reverse
 from accounts.models import Account
 from django.db.models import Avg, Count
 from django.utils.text import slugify
+from decimal import Decimal
+
+from offers.models import ProductOffer
 
 # Create your models here.
 
@@ -42,13 +45,34 @@ class Product(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
     is_featured = models.BooleanField(default=False)
+    offer = models.ForeignKey(ProductOffer, on_delete=models.CASCADE, null=True, blank=True)
+    discounted_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+
+
+
+    def calculate_discounted_price(self):
+        if self.category.offer:
+            if self.category.offer.offer_type == 'PERCENT':
+                discounted_price = self.price - (self.price * (self.category.offer.discount_rate / 100))
+            elif self.category.offer.offer_type == 'FIXED':
+                discounted_price = self.price -  self.category.offer.discount_rate
+        elif self.offer:
+            if self.offer.offer_type == 'PERCENT':
+                discounted_price = self.price - (self.price * (self.offer.discount_rate/100))
+            elif self.offer.offer_type == 'FIXED':
+                discounted_price = self.price - self.offer.discount_rate
+        
+        else :
+            discounted_price = self.price
+
+        return Decimal(discounted_price)
 
 
     def save(self, *args, **kwargs):
         # Generate the slug based on the name if it doesn't exist
         if not self.slug:
             self.slug = slugify(self.product_name)
-
+        self.discounted_price = self.calculate_discounted_price()
         super(Product, self).save(*args, **kwargs)
 
 
