@@ -482,7 +482,7 @@ def restock(request, order_id):
 
 
 
-# =========================================================================== OFFER ==========================================================================================
+# =========================================================================== PRODUCT OFFER ==========================================================================================
 
 def product_offer(request):
     items_per_page = 20
@@ -538,3 +538,61 @@ def delete_product_offer(request, product_offer_id):
     product_offer = ProductOffer.objects.get(id = product_offer_id)
     product_offer.delete()
     return redirect('product_offer')
+
+# ===================================================== CATEGORY OFFER ===============================================================================================================
+
+def category_offer(request):
+    items_per_page = 20
+    p = Paginator(CategoryOffer.objects.all().order_by('-id'), items_per_page)
+    page = request.GET.get('page')
+    data = p.get_page(page)  
+    context = {
+        'data': data
+    }
+    return render(request, 'category_offer/category_offer.html', context)
+
+
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+def add_category_offer(request):
+    if request.method == 'POST':
+        form = CategoryOfferForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            return redirect('category_offer')
+    form  = CategoryOfferForm()
+
+    context = {
+        'form':form
+    }
+
+    return render(request, 'category_offer/category_offer_form.html', context)
+
+
+# -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+def edit_category_offer(request, category_offer_id):
+    catOffer = CategoryOffer.objects.get(id = category_offer_id)
+    if request.method == 'POST':
+        form = CategoryOfferForm(request.POST, instance=catOffer)
+
+        if form.is_valid():
+            form.save()
+            return redirect('category_offer')
+    form = CategoryOfferForm(instance=catOffer)
+    context = {
+        'form':form
+    }
+
+    return render(request, 'category_offer/category_offer_form.html', context)
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def delete_category_offer(request, category_offer_id):
+    catOffer =  CategoryOffer.objects.get(id = category_offer_id)
+
+    catOffer.delete()
+    return redirect('category_offer')

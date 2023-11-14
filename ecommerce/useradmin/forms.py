@@ -122,3 +122,9 @@ class ProductOfferForm(forms.ModelForm):
     class Meta:
         model = ProductOffer
         fields = ['offer_name', 'offer_type', 'discount_rate']
+
+
+class CategoryOfferForm(forms.ModelForm):
+    class Meta:
+        model = CategoryOffer
+        fields = ['offer_name', 'offer_type', 'discount_rate']
