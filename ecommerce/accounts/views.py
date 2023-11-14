@@ -24,6 +24,8 @@ import requests
 
 
 def register(request, *args, **kwargs):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
     code = str(kwargs.get('ref_code'))
     try:
         profile = UserProfile.objects.get(code = code)
