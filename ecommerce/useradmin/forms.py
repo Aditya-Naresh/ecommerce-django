@@ -4,6 +4,7 @@ from store.models import *
 from category.models import Category
 from multiupload.fields import MultiImageField
 from store.models import ProductGallery
+from offers.models import *
 
 class AdminForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput(attrs={
@@ -111,3 +112,13 @@ class ImageForm(forms.ModelForm):
     class Meta:
         model = ProductGallery
         exclude = ['image', 'product']
+
+
+
+
+
+
+class ProductOfferForm(forms.ModelForm):
+    class Meta:
+        model = ProductOffer
+        fields = ['offer_name', 'offer_type', 'discount_rate']

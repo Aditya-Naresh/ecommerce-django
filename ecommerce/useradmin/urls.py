@@ -34,17 +34,24 @@ urlpatterns = [
     path('delete_product/<int:product_id>', views.delete_product, name='delete_product'),
     path('add_product', views.add_product, name='add_product'),
 
-# Product Variations-------------------------------------------------------------------------------------------------------------
+# Product Variations-----------------------------------------------------------------------------------------------------------------
     path('variations', views.variations, name='variations'),
     path('edit_variation/<int:variation_id>', views.edit_variation, name='edit_variation'),
     path('delete_variation/<int:variation_id>', views.delete_variation, name='delete_variation'),
     path('add_variation', views.add_variation, name='add_variation'),
 
-# Orders-----------------------------------------------------------------------------------------------------------------------
+# Orders------------------------------------------------------------------------------------------------------------------------------
     path('orders', views.orders, name='orders'),
     path('ship/<int:order_id>', views.ship, name='ship'),
     path('order_detail/<int:order_id>', views.order_detail, name='order_detail'),
     path('cancelled_orders', views.cancelled_orders, name='cancelled_orders'),
-    path('restock/<int:order_id>', views.restock, name='restock')
+    path('restock/<int:order_id>', views.restock, name='restock'),
+    path('new_orders/', views.new_orders, name='new_orders'),
 
+# Product Offer------------------------------------------------------------------------------------------------------------------------
+
+    path('product_offer', views.product_offer, name='product_offer'),
+    path('add_product_offer', views.add_product_offer, name='add_product_offer'),
+    path('edit_product_offer/<int:product_offer_id>', views.edit_product_offer, name='edit_product_offer'),
+    path('delete_product_offer/<int:product_offer_id>', views.delete_product_offer, name='delete_product_offer'),
 ]

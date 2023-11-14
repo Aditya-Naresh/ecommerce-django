@@ -11,6 +11,7 @@ from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 from django.http import HttpResponseRedirect
 from orders.models import *
+from offers.models import *
 
 
 
@@ -435,6 +436,17 @@ def order_detail(request, order_id):
     }
     return render(request, 'orders/order_detail.html', context)
 
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+def new_orders(request):
+    items_per_page = 20
+    p = Paginator(Order.objects.filter(status = 'New'), items_per_page)
+    page = request.GET.get('page')
+    data = p.get_page(page)    
+    context = {
+        'data': data
+    }
+    return render(request, 'orders/new_orders.html', context)
+
 # -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def cancelled_orders(request):
@@ -466,3 +478,63 @@ def restock(request, order_id):
     order.save()
 
     return redirect('cancelled_orders')
+
+
+
+
+# =========================================================================== OFFER ==========================================================================================
+
+def product_offer(request):
+    items_per_page = 20
+    p = Paginator(ProductOffer.objects.all().order_by('-id'), items_per_page)
+    page = request.GET.get('page')
+    data = p.get_page(page)  
+    context = {
+        'data': data
+    }
+    return render(request, 'product_offer/product_offer.html', context)
+
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def add_product_offer(request):
+    if request.method == 'POST':
+        form = ProductOfferForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            return redirect('product_offer')
+    form  = ProductOfferForm()
+
+    context = {
+        'form':form
+    }
+
+    return render(request, 'product_offer/product_offer_form.html', context)
+
+
+
+# -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def edit_product_offer(request, product_offer_id):
+    productOffer = ProductOffer.objects.get(id = product_offer_id)
+    if request.method == 'POST':
+        form = ProductOfferForm(request.POST, instance=productOffer)
+
+        if form.is_valid():
+            form.save()
+            return redirect('product_offer')
+    form = ProductOfferForm(instance=productOffer)
+    context = {
+        'form':form
+    }
+
+    return render(request, 'product_offer/product_offer_form.html', context)
+
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def delete_product_offer(request, product_offer_id):
+    product_offer = ProductOffer.objects.get(id = product_offer_id)
+    product_offer.delete()
+    return redirect('product_offer')

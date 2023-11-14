@@ -74,7 +74,7 @@
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">Orders:</h6>
                         <a class="collapse-item" href="{% url "orders" %}">All Orders</a>
-                        <a class="collapse-item" href="register.html">New Orders</a>
+                        <a class="collapse-item" href="{% url 'new_orders' %}">New Orders</a>
                         <a class="collapse-item" href="{% url 'cancelled_orders' %}">Cancelled Orders</a>
                     </div>
                 </div>
@@ -90,7 +90,7 @@
                 <div id="offers" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">Offers:</h6>
-                        <a class="collapse-item" href="">Product Offer</a>
+                        <a class="collapse-item" href="{% url 'product_offer' %}">Product Offer</a>
                         <a class="collapse-item" href="l">Category Offer</a>
                         <h6 class="collapse-header">Coupons:</h6>
                         <a class="collapse-item" href="">Coupons</a>
