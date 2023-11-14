@@ -12,7 +12,7 @@ from django.core.mail import EmailMessage
 from django.http import HttpResponseRedirect
 from orders.models import *
 from offers.models import *
-
+from coupon.models import Coupon
 
 
 
@@ -596,3 +596,56 @@ def delete_category_offer(request, category_offer_id):
 
     catOffer.delete()
     return redirect('category_offer')
+
+
+# ===================================== COUPONS =============================================================================================================================================================================
+
+def coupons(request):
+    data = Coupon.objects.all()
+    context = {
+        'data':data
+    }
+    return render(request, 'coupons/coupons.html', context)
+
+
+
+# -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def add_coupon(request):
+    if request.method == 'POST':
+        form = CouponForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            return redirect('coupons')
+    form = CouponForm()
+
+    context = {
+        'form':form
+    }
+
+    return render(request, 'coupons/coupon_form.html',context)
+
+# -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def edit_coupon(request, coupon_id):
+    coupon = Coupon.objects.get(id = coupon_id)
+
+    if request.method == 'POST':
+        form = CouponForm(request.POST, instance=coupon)
+        if form.is_valid():
+            form.save()
+            return redirect('coupons')
+    form = CouponForm(instance=coupon)
+    context = {
+        'form':form
+    }
+    return render(request, 'coupons/coupon_form.html', context)
+
+# -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def delete_coupon(request, coupon_id):
+    coupon = Coupon.objects.get(id = coupon_id)
+    coupon.delete()
+
+    return redirect('coupons')

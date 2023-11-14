@@ -5,6 +5,7 @@ from category.models import Category
 from multiupload.fields import MultiImageField
 from store.models import ProductGallery
 from offers.models import *
+from coupon.models import Coupon
 
 class AdminForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput(attrs={
@@ -128,3 +129,12 @@ class CategoryOfferForm(forms.ModelForm):
     class Meta:
         model = CategoryOffer
         fields = ['offer_name', 'offer_type', 'discount_rate']
+
+
+
+
+
+class CouponForm(forms.ModelForm):
+    class Meta:
+        model = Coupon
+        fields = ['code', 'discount_price', 'minimum_amount']

@@ -59,5 +59,11 @@ urlpatterns = [
     path('category_offer', views.category_offer, name='category_offer'),
     path('add_category_offer', views.add_category_offer, name='add_category_offer'),
     path('edit_category_offer/<int:category_offer_id>', views.edit_category_offer, name='edit_category_offer'),
-    path('delete_category_offer/<int:category_offer_id>', views.delete_category_offer, name='delete_category_offer')
+    path('delete_category_offer/<int:category_offer_id>', views.delete_category_offer, name='delete_category_offer'),
+
+# Coupons ------------------------------------------------------------------------------------------------------------------------------------
+    path('coupons', views.coupons, name='coupons'),
+    path('add_coupon', views.add_coupon, name='add_coupon'),
+    path('edit_coupon/<int:coupon_id>', views.edit_coupon, name='edit_coupon'),
+    path('delete_coupon/<int:coupon_id>', views.delete_coupon, name='delete_coupon')
 ]
