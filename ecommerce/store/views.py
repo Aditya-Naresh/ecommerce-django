@@ -75,15 +75,21 @@ def product_detail(request, brand_slug, product_slug):
         orderproduct = False
 
     # Get reviews
+
     reviews = ReviewRating.objects.filter(product_id = single_product.id, status = True)
-    product_gallery = ProductGallery.objects.filter(product_id = single_product.id) 
-    
+    product_gallery = Images.objects.filter(product_id = single_product.id) 
+    colors = Variation.objects.filter(product = single_product).values('color__id','color__name', 'color__code').distinct()
+
+   
     context = {
         'single_product':single_product,
         'in_cart' :in_cart,
         'orderproduct':orderproduct,
         'reviews' : reviews,
-        'product_gallery' : product_gallery
+        'product_gallery' : product_gallery,
+        # 'sizes':sizes,
+        'colors':colors,
+        # 'variant':variant
     }
     return render(request, 'store/product_detail.html', context)
 
@@ -187,3 +193,8 @@ def filter_data(request):
         
     t = render_to_string('ajax/product-list.html', {'products': allProducts })
     return JsonResponse({'data' : t})
+
+
+
+
+

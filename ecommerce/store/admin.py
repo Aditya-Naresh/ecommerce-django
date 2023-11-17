@@ -3,11 +3,7 @@ from .models import *
 import admin_thumbnails
 # Register your models here.
 
-@admin_thumbnails.thumbnail('image')
-class ProductGalleryInline(admin.TabularInline):
-    model = ProductGallery
-    extra = 1
-    
+
 
 # Brand
 class BrandAdmin(admin.ModelAdmin):
@@ -16,21 +12,52 @@ class BrandAdmin(admin.ModelAdmin):
 
 admin.site.register(Brand, BrandAdmin)
 
+
+
+@admin_thumbnails.thumbnail('image')
+class ProductImageInline(admin.TabularInline):
+    model = Images
+    readonly_fields = ('id',)
+    extra = 1
+
+
+
+class ProductVariantsInline(admin.TabularInline):
+    model = Variation
+    readonly_fields = ('image_tag',)
+    extra = 1
+    show_change_link = True
+
+
+
+@admin_thumbnails.thumbnail('image')
+class ImagesAdmin(admin.ModelAdmin):
+    list_display = ['image','title','image_thumbnail', 'id']
+
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('product_name', 'price', 'stock', 'category', 'brand', 'modified_date', 'is_available')
+    list_display = ('product_name', 'price', 'category', 'brand', 'modified_date', 'is_available')
+    list_filter = ['category']
+    readonly_fields = ('image_tag',)
+    inlines = [ProductImageInline,ProductVariantsInline]
+
     prepopulated_fields = {'slug' : ('product_name',)}
-    inlines = [ProductGalleryInline]
 admin.site.register(Product, ProductAdmin)
 
-class VariationAdmin(admin.ModelAdmin):
-    list_display = ('product', 'variation_category', 'variation_value', 'is_active')
-    list_editable = ('is_active',)
-    list_filter = ('product', 'variation_category', 'variation_value', 'is_active')
-admin.site.register(Variation, VariationAdmin)
 
 
 
+class ColorAdmin(admin.ModelAdmin):
+    list_display = ['name','code','color_tag']
+
+class SizeAdmin(admin.ModelAdmin):
+    list_display = ['name','code', 'id']
+
+
+class VariantsAdmin(admin.ModelAdmin):
+    list_display = ['title','product','color','size','price','quantity','image_tag']
 
 admin.site.register(ReviewRating)
 
-admin.site.register(ProductGallery)
+admin.site.register(Images,ImagesAdmin)
+admin.site.register(Color,ColorAdmin)
+admin.site.register(Size,SizeAdmin)

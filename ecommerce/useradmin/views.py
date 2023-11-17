@@ -244,7 +244,7 @@ def products(request):
 def edit_product(request, product_id):
 
     product = Product.objects.get(pk = product_id)
-    images = ProductGallery.objects.filter(product = product_id)
+    images = Images.objects.filter(product = product_id)
     image_form = ImageForm()
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES, instance = product)
@@ -252,7 +252,7 @@ def edit_product(request, product_id):
 
         if form.is_valid():
             for image in images:
-                pic = ProductGallery.objects.create(
+                pic = Images.objects.create(
                     product = product,
                     image = image
                 )
@@ -272,7 +272,7 @@ def edit_product(request, product_id):
 
 
 def delete_image(request, image_id):
-    image = ProductGallery.objects.get(id = image_id)
+    image = Images.objects.get(id = image_id)
     product_id = image.product.pk
 
     url = reverse('edit_product', kwargs={'product_id': product_id})
@@ -298,7 +298,7 @@ def add_product(request):
         if form.is_valid():
             product = form.save()
             for image in images:
-                pic = ProductGallery.objects.create(
+                pic = Images.objects.create(
                     product = product,
                     image = image
                 )

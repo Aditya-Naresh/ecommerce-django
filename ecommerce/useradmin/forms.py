@@ -3,7 +3,6 @@ from accounts.models import Account
 from store.models import *
 from category.models import Category
 from multiupload.fields import MultiImageField
-from store.models import ProductGallery
 from offers.models import *
 from coupon.models import Coupon
 
@@ -50,7 +49,7 @@ class CategoryForm(forms.ModelForm):
 
     class Meta:
         model = Category
-        fields = ['category_name','description','cat_image']
+        fields = ['category_name','cat_image']
 
     def __init__(self, *args, **kwargs):
         super(CategoryForm, self).__init__(*args, **kwargs)
@@ -81,7 +80,7 @@ class ProductForm(forms.ModelForm):
     
     class Meta:
         model = Product
-        fields = ('product_name','description','price','image','stock','is_available','brand','category', 'is_featured')
+        fields = ('product_name','description','price','image','is_available','brand','category', 'is_featured')
     
     def __init__(self, *args, **kwargs):
         super(ProductForm, self).__init__(*args, **kwargs)
@@ -90,30 +89,10 @@ class ProductForm(forms.ModelForm):
 
 
 
-
-
-class VariationForm(forms.ModelForm):
-    
-    class Meta:
-        model = Variation
-        fields = ('product','variation_category','variation_value')
-
-
-    def __init__(self, *args, **kwargs):
-        super(VariationForm, self).__init__(*args, **kwargs)
-        for field in self.fields:
-            self.fields[field].widget.attrs['class'] = "form-control"
-
-
-
 class ImageForm(forms.ModelForm):
-    Images = MultiImageField(min_num=0, max_num=100, max_file_size=1024*1024*5)
-    
-
     class Meta:
-        model = ProductGallery
-        exclude = ['image', 'product']
-
+        model = Images
+        fields = ['image']
 
 
 

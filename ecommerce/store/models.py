@@ -5,6 +5,8 @@ from accounts.models import Account
 from django.db.models import Avg, Count
 from django.utils.text import slugify
 from decimal import Decimal
+from django.utils.safestring import mark_safe
+
 
 from offers.models import ProductOffer
 
@@ -37,8 +39,7 @@ class Product(models.Model):
     slug = models.SlugField(max_length=200, unique=True, blank=True)
     description = models.TextField(max_length=500, blank=True)
     price = models.IntegerField()
-    image = models.ImageField(upload_to='photos/products')
-    stock = models.IntegerField()
+    image = models.ImageField(upload_to='photos/products', null=False)
     is_available = models.BooleanField(default=True)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
@@ -47,6 +48,8 @@ class Product(models.Model):
     is_featured = models.BooleanField(default=False)
     offer = models.ForeignKey(ProductOffer, on_delete=models.CASCADE, null=True, blank=True)
     discounted_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    create_at=models.DateTimeField(auto_now_add=True)
+    update_at=models.DateTimeField(auto_now=True)
 
 
 
@@ -99,32 +102,80 @@ class Product(models.Model):
             count = float(reviews['count'])
 
         return count 
-
-
-class VariationManager(models.Manager):
-    def colors(self):
-        return super(VariationManager,self).filter(variation_category = 'color', is_active = True)
     
-    def sizes(self):
-        return super(VariationManager,self).filter(variation_category = 'size', is_active = True)
+    def image_tag(self):
+        if self.image.url is not None:
+            return mark_safe('<img src="{}" height="50"/>'.format(self.image.url))
+        else:
+            return ""
 
 
-variation_category_choice = (
-    ('color', 'color'),
-    ('size', 'size')
-)
+# Images
+class Images(models.Model):
+    product=models.ForeignKey(Product,on_delete=models.CASCADE)
+    title = models.CharField(max_length=50,blank=True)
+    image = models.ImageField(blank=True, upload_to='images/')
+
+    def __str__(self):
+        return self.title
+
+
+# Color
+class Color(models.Model):
+    name = models.CharField(max_length=20)
+    code = models.CharField(max_length=10, blank=True, null=True)
+
+    def __str__(self) -> str:
+        return self.name
+    
+    def color_tag(self):
+        if self.code is not None:
+            return mark_safe('<p style="background-color:{}">Color </p>'.format(self.code))
+        else:
+            return ""
+
+
+# Size
+class Size(models.Model):
+    name = models.CharField(max_length=20, unique=True)
+    code = models.CharField(max_length=10, blank=True,null=True)
+    def __str__(self):
+        return self.name
+
+
+
+
 
 class Variation(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    variation_category = models.CharField(max_length=100, choices=variation_category_choice)
-    variation_value = models.CharField(max_length=100)
+    color = models.ForeignKey(Color, on_delete=models.CASCADE, blank=True, null=True)
+    size = models.ForeignKey(Size, on_delete=models.CASCADE, blank=True, null=True)
+    image_id  = models.IntegerField(blank=True, null=True, default=0)
+    quantity = models.PositiveIntegerField(default=1)
+    price = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     is_active = models.BooleanField(default=True)
     created_date = models.DateTimeField(auto_now=True)
 
-    objects = VariationManager()
 
     def __str__(self) -> str:
-        return self.variation_value
+        return str(self.product) + str(self.color) + str(self.size) 
+    
+
+    def image(self):
+        img = Images.objects.get(id=self.image_id)
+        if img.id is not None:
+             varimage=img.image.url
+        else:
+            varimage=""
+        return varimage
+    
+    def image_tag(self):
+        img = Images.objects.get(id=self.image_id)
+        if img.id is not None:
+             return mark_safe('<img src="{}" height="50"/>'.format(img.image.url))
+        else:
+            return ""
+
     
 
 
@@ -147,13 +198,3 @@ class ReviewRating(models.Model):
     
 
 
-class ProductGallery(models.Model):
-    product = models.ForeignKey(Product, default=None, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='store/products', max_length=255)
-
-
-    class Meta:
-        verbose_name_plural = 'product galleries'
-
-    def __str__(self) -> str:
-        return self.product.product_name

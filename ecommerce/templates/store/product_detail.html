@@ -26,7 +26,7 @@
               </li>
             </ul>
           </aside>
-          </aside>
+          
           <main class="col-md-6 border-left">
             <form action="{% url "add_cart" single_product.id %}" method="post">
               {% csrf_token %}
@@ -48,32 +48,42 @@
                     <span class="ml-3 text-danger"><b><del> ${{single_product.price}} </del></b></span>
                     {% endif %}</var>
                 </div>
-
+                
                 <p>{{ single_product.description }}</p>
-
                 <hr />
-                <div class="row">
-                  <div class="item-option-select">
-                    <h6>Choose Color</h6>
-                    <select name="color" class="form-control" required>
-                      <option value="" disabled selected>Select</option>
-                     {% for i in single_product.variation_set.colors %}
-                     <option value="{{i.variation_value | lower}}">{{i.variation_value | capfirst}}</option>
-                     {% endfor %}
-                    </select>
+                <div class="product-options" >
+                  <div class="size-option">
+                      <form method="POST" id="post-form">
+                          <input type="hidden" name="productid" id="productid" value="{{ product.id }}">
+                          <span class="text-uppercase">Size :</span>
+                          {% csrf_token %}
+                          <select name="size" id="size">
+                              {% for rs in sizes %}
+                                  <option {% if variant.size_id == rs.size_id %} selected {% endif %} value="{{ rs.size_id }}">{{ rs.size.name }}</option>
+                              {% endfor %}
+                          </select>
+                      </form>
                   </div>
-                </div> <!-- row.// -->
-                <div class="row">
-                  <div class="item-option-select">
-                    <h6>Select Size</h6>
-                    <select name="size" id="" class="form-control" required>
-                      <option value="" disabled selected>Select </option>
-                     {% for i in single_product.variation_set.sizes %}
-                     <option value="{{i.variation_value}}">{{i.variation_value}}</option>
-                     {% endfor %}
-                    </select>
-                  </div>
-                </div> <!-- row.// -->
+
+                  <form method="post" action="?q=selectvariant" id="post-color">
+                      {% csrf_token %}
+                      <div id="appendHere">
+                          <input type="hidden" name="size" id="size" value="{{ size_id }}">
+                          <ul class="color-option" >
+                              <li><span class="text-uppercase">Color:</span></li>
+                              {% for rs in colors %}
+                                  <input type="radio"  {% if variant.id == rs.id %} checked {% endif %} name="variantid" id="variantid" value="{{ rs.id }}" onchange="this.form.submit();">
+                                  <li  {% if variant.id == rs.id %} class="active" {% endif %}>
+                                      <a style="background-color:{{ rs.color.code }}; color: #D9D9D9; text-shadow: 1px 1px #000000; width: 90px">
+                                          {{ rs.price }} {{ rs.color }}
+                                      </a>
+                                      <img src="{{ rs.image }}" style="height: 70px">
+                                  </li>
+                              {% endfor %}
+                          </ul>
+                      </div>
+                  </form>
+              </div>
                 <hr />
                 {% if single_product.stock < 1 %}
                   <h5 class="text-danger">Out of stock</h5>
@@ -81,6 +91,9 @@
                     <button type="submit" class="btn btn-primary"><span class="text">Add to cart</span> <i class="fas fa-shopping-cart"></i></button>
                   
                 {% endif %}
+
+               
+
               </article> <!-- product-info-aside .// -->
             </form>
           </main> <!-- col.// -->
@@ -184,20 +197,5 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 	
   <script src="https://cdn.jsdelivr.net/gh/igorlino/elevatezoom-plus@1.2.3/src/jquery.ez-plus.js"></script>
-  <script>
-    $(document).ready(function () {
-
-      $('.p_img').ezPlus()
-
-      $('.p_img').addClass('hidden')
-      $('.p_img').first().removeClass('hidden').addClass('focused')
-      $(".thumbnail").on('click', function(e){
-        e.preventDefault()
-        var _img = $(this).data('image')
-        $(".p_img").addClass('hidden')
-        $("#image-" + _img).removeClass('hidden').addClass('focused')
-      })
-    })
-   
-  </script>
+  <script src="{% static 'js/product_detail.js' %}"></script>
 {% endblock %}

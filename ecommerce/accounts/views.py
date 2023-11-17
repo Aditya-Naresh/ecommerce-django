@@ -99,13 +99,18 @@ def login(request):
     if request.method == 'POST':
         email = request.POST['email']
         password = request.POST['password']
-
-        usera = Account.objects.get(email = email)
-
+        try:
+            usera = Account.objects.get(email = email)
+        except Account.DoesNotExist:
+            messages.error(request, 'User does not Exist')
+            return redirect('login')
+        
         if usera.is_blocked:
             messages.error(request, 'User is blocked')
             return redirect('login')
-
+        
+          
+        
         user = auth.authenticate(email = email, password = password)
 
         if user is not None:

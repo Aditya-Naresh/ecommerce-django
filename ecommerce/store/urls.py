@@ -17,4 +17,6 @@ urlpatterns = [
 
     # filter
     path('filter_data', views.filter_data, name='filter_data'),
+
+
 ]
