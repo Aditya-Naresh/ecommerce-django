@@ -74,12 +74,12 @@ def product_detail(request, brand_slug, product_slug):
     else:
         orderproduct = False
 
-    # Get reviews
 
+    # Get reviews
     reviews = ReviewRating.objects.filter(product_id = single_product.id, status = True)
     product_gallery = Images.objects.filter(product_id = single_product.id) 
-    colors = Variation.objects.filter(product = single_product).values('color__id','color__name', 'color__code').distinct()
-
+    colors = Variation.objects.filter(product = single_product).values('color__id', 'color__name', 'color__code').distinct()
+    size = Variation.objects.filter(product = single_product).values('size__id', 'size__name', 'price', 'color__id')
    
     context = {
         'single_product':single_product,
@@ -87,9 +87,10 @@ def product_detail(request, brand_slug, product_slug):
         'orderproduct':orderproduct,
         'reviews' : reviews,
         'product_gallery' : product_gallery,
-        # 'sizes':sizes,
+        'sizes':size,
         'colors':colors,
-        # 'variant':variant
+        # 'variant':variant,
+        
     }
     return render(request, 'store/product_detail.html', context)
 
