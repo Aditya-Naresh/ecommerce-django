@@ -57,7 +57,7 @@
                     </th>
                     <td>
                       {% for color in colors %}
-                      <button class="btn btn-lg choose-color" data-color="{{color.color__id}}" style="background-color: {{color.color__code}}; border: 1px solid gray"></button>
+                      <button class="btn btn-lg choose-color" data-image="{{color.image_id}}" data-color="{{color.color__id}}" style="background-color: {{color.color__code}}; border: 1px solid gray"></button>
                       {% endfor %}
                     </td>
                   </tr>
@@ -67,7 +67,7 @@
                     </th>
                     <td> 
                       {% for size in sizes %}
-                      <button data-price="{{size.price}}" class="btn btn-outline-secondary btn-sm choose-size color-{{size.color__id}}"> {{size.size__name}} </button>
+                      <button data-size="{{size.size__id}}" data-color="{{size.color__id}}" data-price="{{size.price}}" class="btn btn-outline-secondary btn-sm choose-size color-{{size.color__id}}"> {{size.size__name}} </button>
                       {% endfor %}
                     </td>
                   </tr>
@@ -85,10 +85,14 @@
                   </tr>
                 </table>
                   
-              </div>
                 <hr />
-                
-                    <button type="submit" class="btn btn-primary"><span class="text">Add to cart</span> <i class="fas fa-shopping-cart"></i></button>
+                    <div class="text-center">
+                      <input type="hidden" class="product-id" value="{{single_product.id}}">
+                      <input type="hidden" class="product-name" value="{{single_product.product_name}}">
+                      <button type="button" class="btn btn-primary" id="addToCartBtn"><span class="text">Add to cart</span> <i class="fas fa-shopping-cart"></i></button>
+
+                    </div>
+              </div>
                   
               
 

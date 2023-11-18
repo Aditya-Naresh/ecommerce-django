@@ -78,7 +78,7 @@ def product_detail(request, brand_slug, product_slug):
     # Get reviews
     reviews = ReviewRating.objects.filter(product_id = single_product.id, status = True)
     product_gallery = Images.objects.filter(product_id = single_product.id) 
-    colors = Variation.objects.filter(product = single_product).values('color__id', 'color__name', 'color__code').distinct()
+    colors = Variation.objects.filter(product = single_product).values('color__id', 'color__name', 'color__code','image_id').distinct()
     size = Variation.objects.filter(product = single_product).values('size__id', 'size__name', 'price', 'color__id')
    
     context = {

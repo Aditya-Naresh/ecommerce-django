@@ -18,7 +18,10 @@ $(document).ready(function () {
   $(".choose-color").on('click', function(){
     $(".choose-color").removeClass('focused')
     $(this).addClass('focused')
+    $('.p_img').addClass('hidden')
     var _color = $(this).attr('data-color')
+    var _img = $(this).attr('data-image')
+    $("#image-" + _img).removeClass('hidden').addClass('focused')
     $(".choose-size").removeClass('active')
     $(".choose-size").hide()
 
@@ -47,5 +50,41 @@ $(document).ready(function () {
     $(".product-price").text(_price)
   })
 
+
+  // -------------------------------------------------
+  // Add to cart Button:
+  $("#addToCartBtn").on('click', function(){
+    var _vm = $(this)
+    var _qty = 1
+    var _productID = $(".product-id").val()
+    var _productName = $(".product-name").val()
+    var _productPrice = $(".product-price").text()
+    var _color = $(".active").data('color')
+    var _size = $(".active").data('size')
+    console.log(_color);
+    // Ajax
+    $.ajax({
+      url: '/cart/add_cart/'+_productID + '/',
+      data:{
+        'id': _productID,
+        'qty': _qty,
+        'name': _productName,
+        'price': _productPrice,
+        'color': _color,
+        'size': _size
+      },
+      dataType: 'json',
+      beforeSend: function(){
+          _vm.attr('disabled', true)
+      },
+      success: function(res){
+          console.log(res);
+          _vm.attr('disabled', false)
+      }
+  });
+    // Ajax end
+  })
+
+  
 }) // Document Ready end
    
