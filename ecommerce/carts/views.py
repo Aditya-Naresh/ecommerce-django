@@ -48,7 +48,8 @@ def add_cart(request, product_id):
         print(is_cart_item_exists)
         if is_cart_item_exists:
             cart_item = CartItem.objects.get(cart= cart,variation =variation)
-            cart_item.quantity +=1 
+            cart_item.quantity +=1
+            cart_item.user = request.user
             cart_item.save()
         else:
             cart_item = CartItem.objects.create(
@@ -58,7 +59,9 @@ def add_cart(request, product_id):
                 cart = cart,    
             )      
 
-        return redirect('cart')
+            cart_item.user = request.user
+            cart_item.save()
+
     else:
         try:
             cart = Cart.objects.get(cart_id=_cart_id(request))  # Session cart ID
@@ -81,7 +84,11 @@ def add_cart(request, product_id):
                 quantity=1,
                 cart=cart,
             )
-        return redirect('cart')
+
+    context = {
+        'bool':True
+    }
+    return JsonResponse(context)
 
 
 
@@ -127,19 +134,14 @@ def cart(request, total=0, quantity = 0 , cart_items = None):
     discount = 0
     try:
         if request.user.is_authenticated:
-            cart_items = CartItem.objects.filter(user = request.user, is_active = True)
+            cart_items = CartItem.objects.filter(user = request.user)
         else:
             cart = Cart.objects.get(cart_id  = _cart_id(request))
-            cart_items = CartItem.objects.filter(cart=cart, is_active = True)
+            cart_items = CartItem.objects.filter(cart=cart)
         for cart_item in cart_items:
-            total += (cart_item.product.discounted_price * cart_item .quantity)
+            total += (cart_item.variation.price * cart_item .quantity)
             quantity += cart_item.quantity
-            try:        
-                discount = cart_item.cart.coupon.discount_price
-                coupon_used = True
-                coupon = cart_item.cart.coupon
-            except:
-                pass
+            
         tax = (tax_rate * total)/100    
         grand_total = total + tax - discount
     except ObjectDoesNotExist:
@@ -166,9 +168,12 @@ def checkout(request, total=0, quantity = 0 , cart_items = None):
     code = None
     if coupon.is_valid():
         code = coupon.cleaned_data['code']
-        coupon_obj = Coupon.objects.get(code = code)
-        discount_price = coupon_obj.discount_price
-        coupon_used = True
+        try:
+            coupon_obj = Coupon.objects.get(code = code)
+            discount_price = coupon_obj.discount_price
+            coupon_used = True
+        except Coupon.DoesNotExist:
+            messages.error(request, "Coupon doesn't exist")
     coupon_form = CouponForm()
 
 
@@ -183,7 +188,7 @@ def checkout(request, total=0, quantity = 0 , cart_items = None):
             cart_items = CartItem.objects.filter(cart=cart, is_active = True)
         
         for cart_item in cart_items:
-            total += (cart_item.product.price * cart_item .quantity)
+            total += (cart_item.variation.price * cart_item .quantity)
             quantity += cart_item.quantity
 
         tax = (tax_rate * total)/100         

@@ -43,7 +43,7 @@ def store(request, category_slug = None, brand_slug = None):
         product_count = products.count()
 
     for product in products:
-        reviews = ReviewRating.objects.filter(product_id = product.id, status = True)
+        reviews = ReviewRating.objects.filter(product = product, status = True)
 
 
     
@@ -68,7 +68,7 @@ def product_detail(request, brand_slug, product_slug):
     
     if request.user.is_authenticated:
         try:
-            orderproduct = OrderProduct.objects.filter(user = request.user, product_id = single_product.id).exists()
+            orderproduct = OrderProduct.objects.filter(user = request.user, product= single_product).exists()
         except OrderProduct.DoesNotExist:
             orderproduct = False
     else:
@@ -76,8 +76,8 @@ def product_detail(request, brand_slug, product_slug):
 
 
     # Get reviews
-    reviews = ReviewRating.objects.filter(product_id = single_product.id, status = True)
-    product_gallery = Images.objects.filter(product_id = single_product.id) 
+    reviews = ReviewRating.objects.filter(product = single_product, status = True)
+    product_gallery = Images.objects.filter(product = single_product) 
     colors = Variation.objects.filter(product = single_product).values('color__id', 'color__name', 'color__code','image_id').distinct()
     size = Variation.objects.filter(product = single_product).values('size__id', 'size__name', 'price', 'color__id')
    
@@ -110,11 +110,15 @@ def search(request):
             )
             product_count = products.count()
 
-    context = {
-        'products':products,
-        'product_count' :product_count
-    }
-    return render(request, 'store/store.html', context)
+            context = {
+                'products':products,
+                'product_count' :product_count
+            }
+            return render(request, 'store/store.html', context)
+        else:
+            pass
+    else:
+        return redirect('store')
 
 # =================================================  REVIEWS =========================================================================================================
 
@@ -136,8 +140,8 @@ def submit_review(request, product_id):
                 data.review = form.cleaned_data['review']
 
                 data.ip = request.META.get('REMOTE_ADDR')
-                data.product_id = product_id
-                data.user_id = request.user.id
+                data.product.pk = product_id
+                data.user = request.user
                 data.save()
                 messages.success(request, "Thank you! Your review has been submitted")
                 return redirect(url)

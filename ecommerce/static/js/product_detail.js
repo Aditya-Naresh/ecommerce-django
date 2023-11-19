@@ -78,7 +78,7 @@ $(document).ready(function () {
           _vm.attr('disabled', true)
       },
       success: function(res){
-          console.log(res);
+          console.log(res.bool);
           _vm.attr('disabled', false)
       }
   });

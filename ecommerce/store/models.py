@@ -163,7 +163,7 @@ class Variation(models.Model):
 
     def image(self):
         img = Images.objects.get(id=self.image_id)
-        if img.id is not None:
+        if img.pk is not None:
              varimage=img.image.url
         else:
             varimage=""

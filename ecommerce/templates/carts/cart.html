@@ -32,16 +32,15 @@
                             <tr>
                                 <td>
                                     <figure class="itemside align-items-center">
-                                        <div class="aside"><img src="{{cart_item.product.image.url}}" class="img-sm"></div>
+                                        <div class="aside"><img src="{{cart_item.variation.image}}" class="img-sm"></div>
                                         <figcaption class="info">
                                             <a href="{{cart_item.product.get_url}}" class="title text-dark">{{cart_item.product.product_name}}</a>
                                             <p class="text-muted small">
-                                                {% if cart_item.variation.all %}
-                                                    {% for item in cart_item.variation.all %}
-                                                        {{item.variation_category | capfirst}} : {{item.variation_value | capfirst}} <br>
-                                                    {% endfor %}
-                                                {% endif %}
+                                               Color: {{cart_item.variation.color}}
                                             </p>
+                                            <p class="text-muted small">
+                                                Size: {{cart_item.variation.size}}
+                                             </p>
                                         </figcaption>
                                     </figure>
         </td>
@@ -55,9 +54,8 @@
                     <input type="hidden" class="prod_id" value="{{cart_item.id}}">
                     <input type="text" class="form-control qty-input"  data-cart-item-id="{{ cart_item.id }}"  value="{{cart_item.quantity}}">
                     <div class="input-group-append">
-                            {% for item in cart_item.variation.all %}
-                            <input type="hidden" name="{{item.variation_category | lower}}"  value="{{item.variation_value}}">
-                            {% endfor %}
+                           
+                            
                             <button class="btn btn-light changeQuantity increment-btn" type="button" data-cart-item-id="{{ cart_item.id }}"> <i class="fa fa-plus"></i> </button>
                     </div>
                 </div> <!-- input-group.// -->
@@ -66,7 +64,7 @@
         <td> 
             <div class="price-wrap"> 
                 <var class="price">${{cart_item.sub_total}}</var> 
-                <small class="text-muted"> ${{cart_item.poduct.discounted_price}} </small> 
+                <small class="text-muted"> ${{cart_item.variation.price}} </small> 
             </div> <!-- price-wrap .// -->
         </td>
         <td class="text-right"> 
