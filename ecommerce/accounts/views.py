@@ -30,7 +30,6 @@ def register(request, *args, **kwargs):
     try:
         profile = UserProfile.objects.get(code = code)
         request.session['ref_profile'] = profile.id
-        print['id', UserProfile.id]
     except:
         pass
     print(request.session.get_expiry_date)
@@ -359,22 +358,20 @@ def change_password(request):
 
 
 
-@login_required(login_url='login')
-def order_detail(request,order_id):
-    order_detail = OrderProduct.objects.filter(order__order_number = order_id)
-    order = Order.objects.get(order_number = order_id)
 
-    subtotal = 0 
-    for i in order_detail:
-        subtotal += i.product_price * i.quantity
+@login_required(login_url='login')
+def order_detail(request, order_id):
+    order = get_object_or_404(Order,id = order_id)
+    order_detail = OrderProduct.objects.filter(order=order)
+
+    subtotal = sum(item.product_price * item.quantity for item in order_detail)
 
     context = {
-        'order_detail':order_detail,
-        'order' : order,
-        'subtotal':subtotal
+        'order_detail': order_detail,
+        'order': order,
+        'subtotal': subtotal
     }
     return render(request, 'dashboard/order_detail.html', context)
-
 
 
 # =========================== Dashboard Addresses =======================================================

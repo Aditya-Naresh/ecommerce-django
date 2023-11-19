@@ -26,6 +26,9 @@
                 <td>
                     <a href="{% url "delete_image" image.id %}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
                 </td>
+                <td>
+                    <b>Image ID</b>:{{image.id}}
+                </td>
             </tr>
             {% endfor %}
         </table>

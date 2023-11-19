@@ -1,3 +1,5 @@
+from email import message
+from django.contrib import messages
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -332,10 +334,12 @@ def edit_variation(request, variation_id):
     variation = Variation.objects.get(id = variation_id)
 
     if request.method == 'POST':
-        form = VariationForm(request.POST)
+        form = VariationForm(request.POST, instance = variation)
 
         if form.is_valid():
+             
             form.save()
+           
             return redirect('variations')
 
     form = VariationForm(instance=variation)
@@ -364,8 +368,12 @@ def add_variation(request):
         form = VariationForm(request.POST)
 
         if form.is_valid():
-            form.save()
-            return redirect('variations')
+            try:
+                form.save()
+                return redirect('variations')
+            except:
+                messages.error(request, "Variation already Exists")
+                return redirect('add_varition')
     
     form = VariationForm()
 

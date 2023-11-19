@@ -38,7 +38,6 @@ class Product(models.Model):
     product_name = models.CharField(max_length=200, unique=True)
     slug = models.SlugField(max_length=200, unique=True, blank=True)
     description = models.TextField(max_length=500, blank=True)
-    price = models.IntegerField()
     image = models.ImageField(upload_to='photos/products', null=False)
     is_available = models.BooleanField(default=True)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
@@ -53,29 +52,13 @@ class Product(models.Model):
 
 
 
-    def calculate_discounted_price(self):
-        if self.category.offer:
-            if self.category.offer.offer_type == 'PERCENT':
-                discounted_price = self.price - (self.price * (self.category.offer.discount_rate / 100))
-            elif self.category.offer.offer_type == 'FIXED':
-                discounted_price = self.price -  self.category.offer.discount_rate
-        elif self.offer:
-            if self.offer.offer_type == 'PERCENT':
-                discounted_price = self.price - (self.price * (self.offer.discount_rate/100))
-            elif self.offer.offer_type == 'FIXED':
-                discounted_price = self.price - self.offer.discount_rate
-        
-        else :
-            discounted_price = self.price
-
-        return Decimal(discounted_price)
+   
 
 
     def save(self, *args, **kwargs):
         # Generate the slug based on the name if it doesn't exist
         if not self.slug:
             self.slug = slugify(self.product_name)
-        self.discounted_price = self.calculate_discounted_price()
         super(Product, self).save(*args, **kwargs)
 
 
@@ -147,6 +130,7 @@ class Size(models.Model):
 
 
 class Variation(models.Model):
+    slug = models.SlugField(null=True, blank=True, max_length=200, unique=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     color = models.ForeignKey(Color, on_delete=models.CASCADE, blank=True, null=True)
     size = models.ForeignKey(Size, on_delete=models.CASCADE, blank=True, null=True)
@@ -155,6 +139,19 @@ class Variation(models.Model):
     price = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     is_active = models.BooleanField(default=True)
     created_date = models.DateTimeField(auto_now=True)
+
+
+
+    def save(self, *args, **kwargs):
+        # Generate the slug based on the name if it doesn't exist
+        if not self.slug:
+            self.slug = slugify(str(self.color) + str(self.size))
+        
+        if self.price < 0:
+            self.price = 1
+        
+        super(Variation, self).save(*args, **kwargs)
+
 
 
     def __str__(self) -> str:

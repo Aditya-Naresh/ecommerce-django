@@ -35,7 +35,7 @@ class ImagesAdmin(admin.ModelAdmin):
     list_display = ['image','title','image_thumbnail', 'id']
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('product_name', 'price', 'category', 'brand', 'modified_date', 'is_available')
+    list_display = ('product_name', 'category', 'brand', 'modified_date', 'is_available')
     list_filter = ['category']
     readonly_fields = ('image_tag',)
     inlines = [ProductImageInline,ProductVariantsInline]

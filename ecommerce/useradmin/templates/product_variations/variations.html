@@ -3,13 +3,13 @@
 {% block content %}
     <div class="container-fluid">
         <h3>Variations <a href="{% url "add_variation" %}" class="btn btn-success btn-lg float-right"><i class="fa fa-plus"></i> Add Variant</a> </h3>
-    <table class="table bg-white w-50">
+    <table class="table bg-white w-100">
         <thead class="bg-info">
             <tr class="text-white">
                 <th scope="col">Variation ID</th>
                 <th scope="col"> Product </th>
-                <th scope="col">Variation Category</th>
-                <th scope="col">Variation Value</th>
+                <th scope="col">Color</th>
+                <th scope="col">Size</th>
                 <th scope="col">Action</th>
             </tr>
         </thead>
@@ -20,11 +20,11 @@
                 <td> 
                     {{i.product}} 
                 </td>
-               <td> {{i.variation_category}} </td>
-               <td> {{i.variation_value}} </td>
+               <td> {{i.color}} </td>
+               <td> {{i.size}} </td>
                <td>
-                <a href="{% url "edit_variation" i.id %}" class="btn btn-warning"> <i class="fa fa-edit"></i> Edit Variation</a>
-                <button type="button" class="btn btn-danger btn" data-toggle="modal" data-target="#deleteModal{{i.id}}">
+                <a href="{% url "edit_variation" i.id %}" class="btn btn-warning btn-sm"> <i class="fa fa-edit"></i> Edit Variation</a>
+                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal{{i.id}}">
                    <i class="fa fa-trash"></i> Delete Variation
                 </button>               
             </td>

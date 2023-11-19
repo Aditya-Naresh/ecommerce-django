@@ -10,7 +10,7 @@ def get_filters(request):
     brands = Product.objects.distinct().values('brand__brand_name', 'brand__id')
     # colors = Variation.objects.filter(variation_category='color').values_list('variation_value', flat=True).distinct()
     # sizes = Variation.objects.filter(variation_category='size').values_list('variation_value', flat=True).distinct()
-    minMaxPrice = Product.objects.aggregate(Min('price'), Max('price'))
+    minMaxPrice = Variation.objects.aggregate(Min('price'), Max('price'))
 
 
     context = {

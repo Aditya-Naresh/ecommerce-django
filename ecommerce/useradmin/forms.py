@@ -74,13 +74,22 @@ class BrandForm(forms.ModelForm):
 
 
 
+class VariationForm(forms.ModelForm):
+    class Meta:
+        model = Variation
+        fields = ('product','color','size','image_id','quantity','price','is_active')
 
+    def __init__(self, *args, **kwargs):
+        super(VariationForm, self).__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs['class'] = "form-control"
+    
 
 class ProductForm(forms.ModelForm):
     
     class Meta:
         model = Product
-        fields = ('product_name','description','price','image','is_available','brand','category', 'is_featured')
+        fields = ('product_name','description','image','is_available','brand','category', 'is_featured')
     
     def __init__(self, *args, **kwargs):
         super(ProductForm, self).__init__(*args, **kwargs)
@@ -90,9 +99,13 @@ class ProductForm(forms.ModelForm):
 
 
 class ImageForm(forms.ModelForm):
+    Images = MultiImageField(min_num=0, max_num=100, max_file_size=1024*1024*5)
+    
+
     class Meta:
         model = Images
-        fields = ['image']
+        exclude = ['image', 'product','title']
+
 
 
 
