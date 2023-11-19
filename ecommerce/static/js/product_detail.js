@@ -80,6 +80,7 @@ $(document).ready(function () {
       success: function(res){
           console.log(res.bool);
           _vm.attr('disabled', false)
+          window.location.reload()
       }
   });
     // Ajax end

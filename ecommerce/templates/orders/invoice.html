@@ -54,12 +54,11 @@
                                                 <td> {{item.product.product_name}}
                                                     
                                                     <p class="text-muted small">
-                                                        {% if item.variation.all %}
-                                                        {% for i in item.variation.all %}
-                                                        {{i.variation_category | capfirst}} : {{i.variation_value | capfirst}} <br>
-                                                        {% endfor %}
-                                                        {% endif %}
-                                                    </p>
+                                                        <b>Color:</b> {{item.variation.color}}
+                                                     </p>
+                                                     <p class="text-muted small">
+                                                         <b>Size:</b> {{item.variation.size}}
+                                                      </p>
                                                     
                                                 </td>
                                                 <td class="text-center"> {{item.quantity}} </td>
