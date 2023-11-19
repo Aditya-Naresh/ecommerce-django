@@ -51,16 +51,15 @@
                       <td>
                         <figure class="itemside align-items-center">
                           <div class="aside">
-                            <img src="{{ cart_item.product.image.url }}" class="img-sm" />
+                            <img src="{{ cart_item.variation.image }}" class="img-sm" />
                           </div>
                           <figcaption class="info">
                             <a href="{{ cart_item.product.get_url }}" class="title text-dark">{{ cart_item.product.product_name }}</a>
                             <p class="text-muted small">
-                              {% if cart_item.variation.all %}
-                                {% for item in cart_item.variation.all %}
-                                  {{ item.variation_category|capfirst }} : {{ item.variation_value|capfirst }} <br />
-                                {% endfor %}
-                              {% endif %}
+                              <b>Color:</b>{{cart_item.variation.color}}
+                            </p>
+                            <p class="text-muted small">
+                              <b>Size:</b>{{cart_item.variation.size}}
                             </p>
                           </figcaption>
                         </figure>
@@ -71,7 +70,7 @@
                       <td>
                         <div class="price-wrap">
                           <var class="price">${{ cart_item.sub_total }}</var>
-                          <small class="text-muted">${{ cart_item.poduct.price }}</small>
+                          <small class="text-muted">${{ cart_item.variation.price }}</small>
                         </div> <!-- price-wrap .// -->
                       </td>
                     </tr>

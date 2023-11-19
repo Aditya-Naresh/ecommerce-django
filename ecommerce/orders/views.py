@@ -1,3 +1,4 @@
+from itertools import product
 from django.shortcuts import render,redirect
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from carts.models import CartItem
@@ -13,6 +14,8 @@ from django.http import HttpResponse
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from io import BytesIO
+import paypalrestsdk
+
 
 def render_to_pdf(template_path, context):
     template = get_template(template_path)
@@ -119,6 +122,7 @@ def payments(request):
     )
     if order.coupon:
         payment.amount_paid -= order.coupon.discount_price
+    
     payment.save()
 
     order.payment = payment
@@ -130,26 +134,25 @@ def payments(request):
 
     for item in cart_items:
         orderproduct = OrderProduct()
-        orderproduct.order_id = order.id
+        orderproduct.order = order
         orderproduct.payment = payment
-        orderproduct.user_id = request.user.id
-        orderproduct.product_id = item.product_id
+        orderproduct.user= request.user
+        orderproduct.product = item.product
         orderproduct.quantity = item.quantity
-        orderproduct.product_price = item.product.discounted_price
+        orderproduct.product_price = item.variation.price
         orderproduct.ordered = True
         orderproduct.save()
 
-        cart_item = CartItem.objects.get(id = item.id)
+        cart_item = CartItem.objects.get(id = item.pk)
 
-        product_variation = cart_item.variation.all()
-        orderproduct = OrderProduct.objects.get(id = orderproduct.id)
-        orderproduct.variation.set(product_variation)
+        orderproduct = OrderProduct.objects.get(id = orderproduct.pk)
+        orderproduct.variation = cart_item.variation
         orderproduct.save()
         
     # Reduce the Stock
-        product = Product.objects.get(id = item.product_id)
-        product.stock -= item.quantity
-        product.save()
+        variation = Variation.objects.get(product = item.product, id = item.variation.id)
+        variation.quantity -= item.quantity
+        variation.save()
     #  Clear Cart
     CartItem.objects.filter(user = request.user).delete()
 
@@ -191,7 +194,7 @@ def place_order(request, total=0, quantity = 0):
     discount_price = 0
         
     for cart_item in cart_items:
-        total += (cart_item.product.discounted_price * cart_item.quantity)
+        total += (cart_item.variation.price * cart_item.quantity)
         quantity += cart_item.quantity
         
         
@@ -341,28 +344,28 @@ def cash_on_delivery(request):
 
     for item in cart_items:
         orderproduct = OrderProduct()
-        orderproduct.order_id = order.id
+        orderproduct.order = order
         orderproduct.payment = payment
-        orderproduct.user_id = request.user.id
-        orderproduct.product_id = item.product_id
+        orderproduct.user = request.user
+        orderproduct.product = item.product
         orderproduct.quantity = item.quantity
-        orderproduct.product_price = item.product.discounted_price
+        orderproduct.product_price = item.variation.price
         orderproduct.ordered = True
         orderproduct.save()
 
-        cart_item = CartItem.objects.get(id = item.id)
+        cart_item = CartItem.objects.get(id = item.pk)
 
-        product_variation = cart_item.variation.all()
-        orderproduct = OrderProduct.objects.get(id = orderproduct.id)
+        product_variation = cart_item.variation
+        orderproduct = OrderProduct.objects.get(id = orderproduct.pk)
 
-        product_variation = cart_item.variation.all()
-        orderproduct = OrderProduct.objects.get(id = orderproduct.id)
-        orderproduct.variation.set(product_variation)
+        product_variation = cart_item.variation
+        orderproduct = OrderProduct.objects.get(id = orderproduct.pk)
+        orderproduct.variation=product_variation
         orderproduct.save()
 
-        product = Product.objects.get(id = item.product_id)
-        product.stock -= item.quantity
-        product.save()
+        variation = item.variation
+        variation.quantity -= item.quantity
+        variation.save()
     
     CartItem.objects.filter(user = request.user).delete()
     mail_subject = 'Order Placed'
@@ -377,7 +380,7 @@ def cash_on_delivery(request):
     ordered_products = OrderProduct.objects.filter(order_id = order.id)
     subtotal = 0
     for i in ordered_products:
-        subtotal += i.product_price * i.quantity
+        subtotal += i.variation.price * i.quantity
     grand_total = order.order_total
     if order.coupon:
         grand_total -= order.coupon.discount_price
@@ -392,3 +395,10 @@ def cash_on_delivery(request):
         }
     
     return render(request, 'orders/cod_complete.html', context)
+
+
+
+# ============================ REFUND ====================================================================================================================
+
+def process_refund(request):
+    pass
