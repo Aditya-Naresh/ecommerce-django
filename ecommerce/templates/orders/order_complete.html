@@ -66,12 +66,10 @@
                                             {% for item in ordered_products %}
                                             <tr>
                                                 <td> {{item.product.product_name}}
-                                                    
                                                     <p class="text-muted small">
-                                                       <b>Color:</b> {{item.variation.color}}
-                                                    </p>
-                                                    <p class="text-muted small">
-                                                        <b>Size:</b> {{item.variation.size}}
+                                                        <b>Color:</b>{{item.variation.color}}
+                                                        <br>
+                                                        <b>Size:</b>{{item.variation.size}}
                                                      </p>
                                                 </td>
                                                 <td class="text-center"> {{item.quantity}} </td>

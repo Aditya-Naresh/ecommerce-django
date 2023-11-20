@@ -25,6 +25,7 @@ class Order(models.Model):
         ('New','New'),
         ('Shipped', 'Shipped'),
         ('Cancelled', 'Cancelled'),
+        ('Delivered','Delivered')
     )
 
     user = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True)

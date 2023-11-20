@@ -425,15 +425,16 @@ def ship(request, order_id):
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def order_detail(request, order_id):
-    order = Order.objects.get(id = order_id)
-    products = OrderProduct.objects.filter(order = order)
 
+    order = Order.objects.get(pk = order_id)
+    products = OrderProduct.objects.filter(order = order)
+    print(products)
     total_price = order.order_total
     if order.coupon:
         total_price -= order.coupon.discount_price
     subtotal = 0
     for product in products:
-        subtotal += product.quantity * product.product_price
+        subtotal += product.quantity * product.variation.price
 
 
     context = {

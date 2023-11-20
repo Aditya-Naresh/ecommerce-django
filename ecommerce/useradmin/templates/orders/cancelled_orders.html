@@ -17,7 +17,7 @@
         <tbody>
             {% for i in data %}
             <tr>
-                <th scope="row"> <a href="{% url 'order_detail' i.id %}">{{i.order_number}} </a></th>
+                <th scope="row"> <a href="{% url 'order_detail_table' i.id %}">{{i.order_number}} </a></th>
                 <td> {{i.payment.status}} 
                 </td>
                 <td>$ {{i.order_total}} </td>

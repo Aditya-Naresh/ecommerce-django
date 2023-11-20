@@ -325,6 +325,7 @@ def cancel_order(request,order_id):
 # =================================================================== CASH ON DELIVERY ==============================================================================================
 def cash_on_delivery(request):
     order_number = request.POST['order_number']
+    print(order_number)
     order = Order.objects.get(user = request.user, is_ordered = False, order_number = order_number )
     payment = Payment(
         user = request.user,

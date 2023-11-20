@@ -150,6 +150,10 @@ class Variation(models.Model):
         if self.price < 0:
             self.price = 1
         
+        if self.quantity < 0:
+            self.quantity = 1
+        super().save(*args, **kwargs)
+        
         super(Variation, self).save(*args, **kwargs)
 
 
