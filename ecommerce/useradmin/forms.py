@@ -49,7 +49,7 @@ class CategoryForm(forms.ModelForm):
 
     class Meta:
         model = Category
-        fields = ['category_name','cat_image']
+        fields = ['category_name','cat_image','offer']
 
     def __init__(self, *args, **kwargs):
         super(CategoryForm, self).__init__(*args, **kwargs)
@@ -89,7 +89,7 @@ class ProductForm(forms.ModelForm):
     
     class Meta:
         model = Product
-        fields = ('product_name','description','image','is_available','brand','category', 'is_featured')
+        fields = ('product_name','description','image','is_available','brand','category', 'offer', 'is_featured')
     
     def __init__(self, *args, **kwargs):
         super(ProductForm, self).__init__(*args, **kwargs)

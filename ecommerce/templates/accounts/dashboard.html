@@ -26,6 +26,9 @@
                                 </h5>
                                 <h4>{{orders_count}}</h4>
                                 <a href="{% url "my_orders" %}">View Orders</a>
+                                <p>
+                                    <b>Referrd By:</b> {{userprofile.recommended_by.full_name}}
+                                </p>
                             </div>
                         </div>
                     </div>     

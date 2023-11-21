@@ -64,7 +64,7 @@ def register(request, *args, **kwargs):
                 registered_profile.recommended_by = recommended_by_profile.user
                 registered_profile.save()
             else:
-                form.save()
+                pass
             # User activation
             current_site = get_current_site(request)
             mail_subject = 'Account Activation'

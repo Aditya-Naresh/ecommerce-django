@@ -37,9 +37,12 @@ def useradmin(request):
 def customers(request):
     items_per_page = 10
     if request.user.is_admin:
-        p = Paginator(Account.objects.filter(is_admin = False).order_by('id'), items_per_page)
+        accounts_with_profiles = Account.objects.filter(is_admin=False).select_related('userprofile').order_by('id')
+        
+        p = Paginator(accounts_with_profiles, items_per_page)
         page = request.GET.get('page')
-        customers = p.get_page(page)        
+        customers = p.get_page(page)
+ 
         context = {
             'customers':customers
         }

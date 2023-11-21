@@ -9,7 +9,7 @@
                 <th scope="col">Category ID</th>
                 <th scope="col">Category Name</th>
                 <th>Image</th>
-                <th scope="col">Description</th>
+                <th scope="col">Offers</th>
                 <th scope="col">Action</th>
             </tr>
         </thead>
@@ -22,7 +22,7 @@
                 <td>
                     <img src="{{cat.cat_image.url}}" alt="{{cat.cat_name}}" height="50px" width="50px">
                 </td>
-                <td> {{cat.description}} </td>
+                <td> {{cat.offer}} </td>
                <td>
                 <a href="{% url "edit_category" cat.id %}" class="btn btn-warning"> <i class="fa fa-edit"></i> Edit Category</a>
                 <button type="button" class="btn btn-danger btn" data-toggle="modal" data-target="#deleteModal{{cat.id}}">
