@@ -139,9 +139,9 @@ def cart(request, total=0, quantity = 0 , cart_items = None):
             cart = Cart.objects.get(cart_id  = _cart_id(request))
             cart_items = CartItem.objects.filter(cart=cart)
         for cart_item in cart_items:
-            total += (cart_item.variation.price * cart_item .quantity)
+            total += (cart_item.variation.discounted_price * cart_item .quantity)
             quantity += cart_item.quantity
-            
+        
         tax = (tax_rate * total)/100    
         grand_total = total + tax - discount
     except ObjectDoesNotExist:
@@ -176,6 +176,7 @@ def checkout(request, total=0, quantity = 0 , cart_items = None):
             messages.error(request, "Coupon doesn't exist")
     coupon_form = CouponForm()
 
+    
 
     try:
         tax_rate = 2
@@ -188,19 +189,21 @@ def checkout(request, total=0, quantity = 0 , cart_items = None):
             cart_items = CartItem.objects.filter(cart=cart, is_active = True)
         
         for cart_item in cart_items:
-            total += (cart_item.variation.price * cart_item.quantity)
+            total += (cart_item.variation.discounted_price * cart_item.quantity)
             quantity += cart_item.quantity
 
         tax = (tax_rate * total)/100         
         grand_total = total + tax 
 
         if coupon_obj is not None:
+            
             if grand_total > coupon_obj.minimum_amount:
-                grand_total -= discount_price
+                grand_total -= coupon_obj.discount_price
+                print(grand_total)
             else:
                 coupon_used = False
                 messages.warning(request, 'You should purchase more than $'+ str(coupon_obj.minimum_amount) +' to use this coupon')
-    
+            
     except ObjectDoesNotExist:
         pass
 

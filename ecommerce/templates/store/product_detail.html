@@ -67,7 +67,7 @@
                     </th>
                     <td> 
                       {% for size in sizes %}
-                      <button data-size="{{size.size__id}}" data-color="{{size.color__id}}" data-price="{{size.price}}" class="btn btn-outline-secondary btn-sm choose-size color-{{size.color__id}}"> {{size.size__name}} </button>
+                      <button data-size="{{size.size__id}}" data-color="{{size.color__id}}" data-price="{{size.discounted_price}}" class="btn btn-outline-secondary btn-sm choose-size color-{{size.color__id}}"> {{size.size__name}} </button>
                       {% endfor %}
                     </td>
                   </tr>
@@ -78,8 +78,7 @@
                     <th>
                       $
                       <span class="product-price">
-                        {{single_product.variation_set.first.price}}
-
+                        
                       </span>
                     </th>
                   </tr>

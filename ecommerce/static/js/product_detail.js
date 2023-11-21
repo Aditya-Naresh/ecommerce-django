@@ -33,12 +33,12 @@ $(document).ready(function () {
 
   })
 
-
+  
   var _color = $(".choose-color").first().attr('data-color')
-  var _price = $(".choose-size").first().attr('data-price')
   $(".color-"+_color).show()
   $(".choose-color").first().addClass('focused')
   $(".color-"+ _color).first().addClass('active')
+  var _price = $(".active").attr('data-price')
   $(".product-price").text(_price)
 
   

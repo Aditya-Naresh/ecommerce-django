@@ -23,7 +23,7 @@ class CartItem(models.Model):
 
 
     def sub_total(self):
-        return self.variation.price * self.quantity
+        return self.variation.discounted_price * self.quantity
 
     def __str__(self) -> str:
         return self.product.product_name

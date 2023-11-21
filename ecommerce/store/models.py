@@ -46,7 +46,6 @@ class Product(models.Model):
     modified_date = models.DateTimeField(auto_now=True)
     is_featured = models.BooleanField(default=False)
     offer = models.ForeignKey(ProductOffer, on_delete=models.CASCADE, null=True, blank=True)
-    discounted_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     create_at=models.DateTimeField(auto_now_add=True)
     update_at=models.DateTimeField(auto_now=True)
 
@@ -136,26 +135,41 @@ class Variation(models.Model):
     size = models.ForeignKey(Size, on_delete=models.CASCADE, blank=True, null=True)
     image_id  = models.IntegerField(blank=True, null=True, default=0)
     quantity = models.PositiveIntegerField(default=1)
-    price = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    price = models.DecimalField(max_digits=12, decimal_places=2, default=0) # type: ignore
     is_active = models.BooleanField(default=True)
     created_date = models.DateTimeField(auto_now=True)
+    discounted_price = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True) # type: ignore
+
+    def calculate_discounted_price(self):
+        discounted_price = self.price        
+        if self.product.category.offer:
+            offer = self.product.category.offer
+            if offer.offer_type == 'PERCENT':
+                discounted_price = self.price - (self.price * (self.product.category.offer.discount_rate / 100))
+            elif offer.offer_type == 'FIXED':
+                discounted_price = self.price - self.product.category.offer.discount_rate
+        elif self.product.offer:
+            offer = self.product.offer
+            if offer.offer_type == 'PERCENT':
+                discounted_price = self.price - (self.price * (self.product.offer.discount_rate / 100))
+            elif offer.offer_type == 'FIXED':
+                discounted_price = self.price - self.product.offer.discount_rate
+        
+        return Decimal(discounted_price)
 
 
 
     def save(self, *args, **kwargs):
-        # Generate the slug based on the name if it doesn't exist
-        if not self.slug:
-            self.slug = slugify(str(self.color) + str(self.size))
+        self.slug = slugify(str(self.color) + str(self.size))
         
         if self.price < 0:
             self.price = 1
         
         if self.quantity < 0:
             self.quantity = 1
-        super().save(*args, **kwargs)
-        
-        super(Variation, self).save(*args, **kwargs)
 
+        self.discounted_price = self.calculate_discounted_price()
+        super(Variation, self).save(*args, **kwargs)
 
 
     def __str__(self) -> str:

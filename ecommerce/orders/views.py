@@ -139,7 +139,7 @@ def payments(request):
         orderproduct.user= request.user
         orderproduct.product = item.product
         orderproduct.quantity = item.quantity
-        orderproduct.product_price = item.variation.price
+        orderproduct.product_price = item.variation.discounted_price    
         orderproduct.ordered = True
         orderproduct.save()
 
@@ -150,7 +150,7 @@ def payments(request):
         orderproduct.save()
         
     # Reduce the Stock
-        variation = Variation.objects.get(product = item.product, id = item.variation.id)
+        variation = Variation.objects.get(product = item.product, id = item.variation.pk)
         variation.quantity -= item.quantity
         variation.save()
     #  Clear Cart
@@ -194,7 +194,7 @@ def place_order(request, total=0, quantity = 0):
     discount_price = 0
         
     for cart_item in cart_items:
-        total += (cart_item.variation.price * cart_item.quantity)
+        total += (cart_item.variation.discounted_price * cart_item.quantity)
         quantity += cart_item.quantity
         
         
@@ -225,6 +225,8 @@ def place_order(request, total=0, quantity = 0):
                 code = request.POST['coupon']
                 coupon_obj = Coupon.objects.get(code = code)
                 data.coupon = coupon_obj
+                coupon_obj.is_used = True
+                coupon_obj.save()
                 discount_price = data.coupon.discount_price
             except:
                 pass
@@ -381,7 +383,7 @@ def cash_on_delivery(request):
     ordered_products = OrderProduct.objects.filter(order_id = order.id)
     subtotal = 0
     for i in ordered_products:
-        subtotal += i.variation.price * i.quantity
+        subtotal += i.variation.discounted_price * i.quantity
     grand_total = order.order_total
     if order.coupon:
         grand_total -= order.coupon.discount_price

@@ -480,12 +480,12 @@ def restock(request, order_id):
     order_products = OrderProduct.objects.filter(order = order)
 
     for order_product in order_products:
-        product = order_product.product
-        print(product.stock)
-        product.stock += order_product.quantity
+        product = order_product.variation
+        print(product.quantity)
+        product.quantity += order_product.quantity
 
         product.save()
-        print(product.stock)
+        print(product.quantity)
 
     order.restock = True
     order.save()
