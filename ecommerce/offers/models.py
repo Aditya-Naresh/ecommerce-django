@@ -16,8 +16,11 @@ class CategoryOffer(models.Model):
         return str(self.offer_name) + " (" + str(self.offer_type) + ")"
     
     def save(self, *args, **kwargs):
-        if self.discount_rate < 0:
-            self.discount_rate = 0
+        self.discount_rate = max(self.discount_rate, 0)
+
+        if self.offer_type == 'PERCENT':
+            self.discount_rate = min(self.discount_rate, 80)
+
         super(CategoryOffer, self).save(*args, **kwargs)
 
 
@@ -38,7 +41,9 @@ class ProductOffer(models.Model):
         return str(self.offer_name) + " (" + str(self.offer_type) + ")"
     
     def save(self, *args, **kwargs):
-        if self.discount_rate < 0:
-            self.discount_rate = 0
+        self.discount_rate = max(self.discount_rate, 0)
+
+        if self.offer_type == 'PERCENT':
+            self.discount_rate = min(self.discount_rate, 80)
         super(ProductOffer, self).save(*args, **kwargs)
 

@@ -1,4 +1,5 @@
 from email import message
+from os import error
 from django.contrib import messages
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
@@ -511,6 +512,14 @@ def add_product_offer(request):
         form = ProductOfferForm(request.POST)
 
         if form.is_valid():
+            discount = form.cleaned_data['discount_rate']
+            order_type = form.cleaned_data['offer_type']
+            if discount < 0:
+                messages.error(request, "The discount rate should not be negative")
+                return redirect('add_product_offer')
+            if order_type == 'PERCENT' and discount > 80:
+                messages.error(request, "The discount percentage should be less than or equal to 80")
+                return redirect('add_product_offer')
             form.save()
             return redirect('product_offer')
     form  = ProductOfferForm()
@@ -531,6 +540,15 @@ def edit_product_offer(request, product_offer_id):
         form = ProductOfferForm(request.POST, instance=productOffer)
 
         if form.is_valid():
+            discount = form.cleaned_data['discount_rate']
+            order_type = form.cleaned_data['offer_type']
+            url = reverse('edit_product_offer', kwargs={'product_offer_id': product_offer_id})
+            if discount < 0:
+                messages.error(request, "The discount rate should not be negative")
+                return redirect(url)
+            if order_type == 'PERCENT' and discount > 80:
+                messages.error(request, "The discount percentage should be less than or equal to 80")
+                return redirect(url)
             form.save()
             return redirect('product_offer')
     form = ProductOfferForm(instance=productOffer)
@@ -569,6 +587,14 @@ def add_category_offer(request):
         form = CategoryOfferForm(request.POST)
 
         if form.is_valid():
+            discount = form.cleaned_data['discount_rate']
+            order_type = form.cleaned_data['offer_type']
+            if discount < 0:
+                messages.error(request, "The discount rate should not be negative")
+                return redirect('add_category_offer')
+            if order_type == 'PERCENT' and discount > 80:
+                messages.error(request, "The discount percentage should be less than or equal to 80")
+                return redirect('add_category_offer')
             form.save()
             return redirect('category_offer')
     form  = CategoryOfferForm()
@@ -589,6 +615,15 @@ def edit_category_offer(request, category_offer_id):
         form = CategoryOfferForm(request.POST, instance=catOffer)
 
         if form.is_valid():
+            discount = form.cleaned_data['discount_rate']
+            order_type = form.cleaned_data['offer_type']
+            url = reverse('edit_category_offer', kwargs={'category_offer_id': category_offer_id})
+            if discount < 0:
+                messages.error(request, "The discount rate should not be negative")
+                return redirect(url)
+            if order_type == 'PERCENT' and discount > 80:
+                messages.error(request, "The discount percentage should be less than or equal to 80")
+                return redirect(url)
             form.save()
             return redirect('category_offer')
     form = CategoryOfferForm(instance=catOffer)
