@@ -68,7 +68,7 @@ def product_detail(request, brand_slug, product_slug):
     
     if request.user.is_authenticated:
         try:
-            orderproduct = OrderProduct.objects.filter(user = request.user, product= single_product).exists()
+            orderproduct = OrderProduct.objects.filter(user = request.user, product= single_product, order__status = 'Delivered').exists()
         except OrderProduct.DoesNotExist:
             orderproduct = False
     else:

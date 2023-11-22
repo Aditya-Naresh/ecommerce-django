@@ -14,7 +14,6 @@ from django.http import HttpResponse
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from io import BytesIO
-import paypalrestsdk
 
 
 def render_to_pdf(template_path, context):
@@ -28,7 +27,7 @@ def render_to_pdf(template_path, context):
         pagesize='letter'  # Set the page size to letter (8.5 x 11 inches)
     )
     
-    if not pdf.err:
+    if not pdf.err: #type:ignore
         response.seek(0)
         return response
     return None
@@ -41,8 +40,8 @@ def download_invoice(request, order_id):
     discount = 0
     if order.coupon:
         discount  = order.coupon.discount_price
-    ordered_products = OrderProduct.objects.filter(order_id=order.id)
-    payment = Payment.objects.get(payment_id=order.payment.payment_id)
+    ordered_products = OrderProduct.objects.filter(order_id=order.id) #type:ignore
+    payment = Payment.objects.get(payment_id=order.payment.payment_id) #type:ignore
     subtotal = 0
    
     for item in ordered_products:
@@ -78,7 +77,7 @@ def cod_invoice(request, order_id):
     discount = 0
     if order.coupon:
         discount  = order.coupon.discount_price
-    ordered_products = OrderProduct.objects.filter(order_id=order.id)
+    ordered_products = OrderProduct.objects.filter(order_id=order.id) #type:ignore
     subtotal = 0
    
     for item in ordered_products:
@@ -121,7 +120,7 @@ def payments(request):
         status = body['status']
     )
     if order.coupon:
-        payment.amount_paid -= order.coupon.discount_price
+        payment.amount_paid -= order.coupon.discount_price  #type:ignore
     
     payment.save()
 
@@ -139,7 +138,7 @@ def payments(request):
         orderproduct.user= request.user
         orderproduct.product = item.product
         orderproduct.quantity = item.quantity
-        orderproduct.product_price = item.variation.discounted_price    
+        orderproduct.product_price = item.variation.discounted_price    #type:ignore
         orderproduct.ordered = True
         orderproduct.save()
 
@@ -150,7 +149,7 @@ def payments(request):
         orderproduct.save()
         
     # Reduce the Stock
-        variation = Variation.objects.get(product = item.product, id = item.variation.pk)
+        variation = Variation.objects.get(product = item.product, id = item.variation.pk) #type:ignore
         variation.quantity -= item.quantity
         variation.save()
     #  Clear Cart
@@ -194,7 +193,7 @@ def place_order(request, total=0, quantity = 0):
     discount_price = 0
         
     for cart_item in cart_items:
-        total += (cart_item.variation.discounted_price * cart_item.quantity)
+        total += (cart_item.variation.discounted_price * cart_item.quantity) #type: ignore
         quantity += cart_item.quantity
         
         
@@ -241,7 +240,7 @@ def place_order(request, total=0, quantity = 0):
             d = datetime.date(yr,mt,dt)
             current_date = d.strftime("%Y%m%d")
 
-            ordernumber = current_date + str(data.id)
+            ordernumber = current_date + str(data.id) # type: ignore
             data.order_number = ordernumber
             data.save()
 
@@ -276,7 +275,7 @@ def order_complete(request):
 
     try:
         order = Order.objects.get(order_number = order_number, is_ordered = True)
-        ordered_products = OrderProduct.objects.filter(order_id = order.id)
+        ordered_products = OrderProduct.objects.filter(order_id = order.id) # type: ignore
         payment = Payment.objects.get(payment_id = transID)
         subtotal = 0
         for i in ordered_products:
@@ -336,7 +335,7 @@ def cash_on_delivery(request):
         status = "NOT PAID"
     )
     if order.coupon :
-        payment.amount_paid -= order.coupon.discount_price
+        payment.amount_paid -= order.coupon.discount_price # type: ignore
     payment.save()
 
     order.payment = payment
@@ -352,7 +351,7 @@ def cash_on_delivery(request):
         orderproduct.user = request.user
         orderproduct.product = item.product
         orderproduct.quantity = item.quantity
-        orderproduct.product_price = item.variation.price
+        orderproduct.product_price = item.variation.price #type:ignore
         orderproduct.ordered = True
         orderproduct.save()
 
@@ -367,8 +366,8 @@ def cash_on_delivery(request):
         orderproduct.save()
 
         variation = item.variation
-        variation.quantity -= item.quantity
-        variation.save()
+        variation.quantity -= item.quantity #type:ignore
+        variation.save()    #type:ignore
     
     CartItem.objects.filter(user = request.user).delete()
     mail_subject = 'Order Placed'
@@ -380,10 +379,10 @@ def cash_on_delivery(request):
     send_mail = EmailMessage(mail_subject, message, to = [to_email])
     send_mail.send()
     
-    ordered_products = OrderProduct.objects.filter(order_id = order.id)
+    ordered_products = OrderProduct.objects.filter(order_id = order.id) #type:ignore
     subtotal = 0
     for i in ordered_products:
-        subtotal += i.variation.discounted_price * i.quantity
+        subtotal += i.variation.discounted_price * i.quantity #type:ignore
     grand_total = order.order_total
     if order.coupon:
         grand_total -= order.coupon.discount_price
