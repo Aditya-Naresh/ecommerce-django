@@ -130,3 +130,9 @@ class CouponForm(forms.ModelForm):
     class Meta:
         model = Coupon
         fields = ['code', 'discount_price', 'minimum_amount']
+
+
+
+class DateRangeForm(forms.Form):
+   start_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+   end_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))

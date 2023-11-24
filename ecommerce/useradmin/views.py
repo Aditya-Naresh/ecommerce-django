@@ -1,4 +1,5 @@
 from email import message
+from multiprocessing import context
 from os import error
 from django.contrib import messages
 from django.shortcuts import render,redirect
@@ -12,14 +13,55 @@ from orders.models import Order
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse,JsonResponse
 from orders.models import *
 from offers.models import *
 from coupon.models import Coupon
-
-
-
+import calendar
+from django.db.models.functions import ExtractMonth
+from django.db.models import Sum
+import csv
 # Create your views here.
+def get_sales_data(request):
+   start_date = request.GET.get('start_date')
+   end_date = request.GET.get('end_date')
+
+   sales_data = Order.objects.filter(
+       created_at__range=[start_date, end_date]
+   ).aggregate(
+       total_sales=Sum('order_total')
+   )
+
+   return JsonResponse(sales_data)
+
+def download_sales_report(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="sales_report.csv"'
+
+    writer = csv.writer(response)
+
+    # Write header row
+    writer.writerow(['Order Number', 'Order Total', 'Product Name', 'Quantity', 'Price'])
+
+    # Get all orders
+    orders = Order.objects.all()
+
+    # Loop through orders
+    for order in orders:
+        # Get related OrderItems for the current order
+        order_items = OrderProduct.objects.filter(order=order)
+
+        # Loop through OrderItems and write rows
+        for order_item in order_items:
+            writer.writerow([
+                order.order_number,
+                order.order_total,
+                order_item.product,  # Replace with the actual field name for product name
+                order_item.quantity,
+                order_item.product_price,
+            ])
+
+    return response
 
 def decorator(request):
     return render(request, 'decorator.html')
@@ -28,7 +70,18 @@ def decorator(request):
 @login_required(login_url='login')
 def useradmin(request):
     if request.user.is_admin:
-        return render(request, 'index.html')
+        orders = Order.objects.annotate(month=ExtractMonth('created_at')).values('month').annotate(count= Count('id')).values('month', 'count')
+        monthNumber = []
+        totalOrders = []
+        for d in orders:
+            monthNumber.append(calendar.month_name[d['month']])
+            totalOrders.append(d['count'])
+        context = {
+            'orders':orders,
+            'monthNumber':monthNumber,
+            'totalOrders':totalOrders
+        }
+        return render(request, 'index.html', context)
     else:
         return redirect('decorator')
     
