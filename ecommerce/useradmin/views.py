@@ -1,6 +1,4 @@
 from email import message
-from multiprocessing import context
-from os import error
 from django.contrib import messages
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
@@ -8,7 +6,6 @@ from django.core.paginator import Paginator
 from accounts.models import Account
 from .forms import *
 from store.models import *
-from django.utils.text import slugify
 from orders.models import Order
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
@@ -41,7 +38,7 @@ def download_sales_report(request):
     writer = csv.writer(response)
 
     # Write header row
-    writer.writerow(['Order Number', 'Order Total', 'Product Name', 'Quantity', 'Price'])
+    writer.writerow(['Order Number', 'Order Total', 'Order Date', 'Product Name', 'Quantity', 'Price'])
 
     # Get all orders
     orders = Order.objects.all()
@@ -56,7 +53,8 @@ def download_sales_report(request):
             writer.writerow([
                 order.order_number,
                 order.order_total,
-                order_item.product,  # Replace with the actual field name for product name
+                order.created_at.strftime('%Y-%m-%d %H:%M:%S'), 
+                order_item.product,  
                 order_item.quantity,
                 order_item.product_price,
             ])
@@ -491,7 +489,7 @@ def order_detail(request, order_id):
         total_price -= order.coupon.discount_price
     subtotal = 0
     for product in products:
-        subtotal += product.quantity * product.variation.price
+        subtotal += product.quantity * product.variation.discounted_price # type: ignore
 
 
     context = {
