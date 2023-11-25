@@ -68,7 +68,6 @@ urlpatterns = [
     path('delete_coupon/<int:coupon_id>', views.delete_coupon, name='delete_coupon'),
 
 # Reports
-    path('get_sales_data',views.get_sales_data, name='get_sales_data'),
     path('download_sales_report',views.download_sales_report, name='download_sales_report'),
 
 ]

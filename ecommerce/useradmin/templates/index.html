@@ -8,7 +8,7 @@
         <div class="col-md-9">
 
           <h1>Sales Report</h1>
-          <form method="GET" action="{% url 'get_sales_data' %}">
+          <form method="GET" action="">
               <label for="start_date">Start Date:</label>
               <input type="date" id="start_date" name="start_date" class="form-control">
               <label for="end_date">End Date:</label>
@@ -21,34 +21,48 @@
                 <canvas id="myChart"></canvas>
             </div>
         </div>
+        <form action="{% url 'download_sales_report' %}">
+          <input type="hidden" value="{{start_date}}" name="start_date" >
+          <input type="hidden" value="{{end_date}}" name="end_date" >
+          <button class="btn btn-primary" >Download Sales Report</button>   
+        </form>
     </div>                      
            
-    <a href="{% url 'download_sales_report' %}">Download Sales Report</a>   
-
 
     <script>
-        const ctx = document.getElementById('myChart');
-      
-        new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: {{monthNumber |safe}},
-            datasets: [{
-              label: 'orders by month',
-              data: {{totalOrders}},
-              borderWidth: 1,
+      const ctx = document.getElementById('myChart');
+     
+      // Parse the sales_json string to a JavaScript object
+      const sales = JSON.parse('{{ sales|escapejs }}');
+     
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: sales.map(sale => sale.date),
+          datasets: [{
+            label: 'Total Revenue by Date',
+            data: sales.map(sale => sale.total_revenue),
+            borderWidth: 1,
+          }],
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
             },
-            ],
-            
-          },
-          options: {
-            scales: {
-              y: {
-                beginAtZero: true
+            x: {
+              type: 'category',
+              time: {
+                unit: 'day',
+                displayFormats: {
+                  day: 'MMM D, YYYY'
+                }
               }
             }
           }
-        });
-      </script>
-            
+        }
+      });
+     </script>
+     
+                
     {% endblock content %}

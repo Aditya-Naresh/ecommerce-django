@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from email import message
 from django.contrib import messages
 from django.shortcuts import render,redirect
@@ -16,50 +17,51 @@ from offers.models import *
 from coupon.models import Coupon
 import calendar
 from django.db.models.functions import ExtractMonth
-from django.db.models import Sum
+from django.db.models import Sum, Q, F
 import csv
-# Create your views here.
-def get_sales_data(request):
-   start_date = request.GET.get('start_date')
-   end_date = request.GET.get('end_date')
+from django.db.models.functions import TruncDate
+import json
+from django.core.serializers.json import DjangoJSONEncoder
 
-   sales_data = Order.objects.filter(
-       created_at__range=[start_date, end_date]
-   ).aggregate(
-       total_sales=Sum('order_total')
-   )
 
-   return JsonResponse(sales_data)
+from django.utils import timezone
 
 def download_sales_report(request):
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="sales_report.csv"'
+  response = HttpResponse(content_type='text/csv')
+  response['Content-Disposition'] = 'attachment; filename="sales_report.csv"'
 
-    writer = csv.writer(response)
+  writer = csv.writer(response)
 
-    # Write header row
-    writer.writerow(['Order Number', 'Order Total', 'Order Date', 'Product Name', 'Quantity', 'Price'])
+  # Write header row
+  writer.writerow(['Order Number', 'Order Total', 'Order Date', 'User', 'Product Name', 'Quantity', 'Price'])
 
-    # Get all orders
-    orders = Order.objects.all()
+  # Get all orders within the date range
+  start_date_str = request.GET['start_date']
+  end_date_str = request.GET['end_date']
+  start_date = timezone.datetime.strptime(start_date_str, '%b. %d, %Y, midnight').date()
+  end_date = (timezone.datetime.strptime(end_date_str, '%b. %d, %Y, midnight').date() + timedelta(days=1))
+  orders = Order.objects.filter(created_at__range=(start_date, end_date))
 
-    # Loop through orders
-    for order in orders:
-        # Get related OrderItems for the current order
-        order_items = OrderProduct.objects.filter(order=order)
+  # Loop through orders
+  for order in orders:
+      # Get related OrderItems for the current order
+      order_items = OrderProduct.objects.filter(order=order)
 
-        # Loop through OrderItems and write rows
-        for order_item in order_items:
-            writer.writerow([
-                order.order_number,
-                order.order_total,
-                order.created_at.strftime('%Y-%m-%d %H:%M:%S'), 
-                order_item.product,  
-                order_item.quantity,
-                order_item.product_price,
-            ])
+      # Loop through OrderItems and write rows
+      for order_item in order_items:
+          writer.writerow([
+              order.order_number,
+              order.order_total,
+              order.created_at.strftime('%Y-%m-%d %H:%M:%S'), 
+              order.user,
+              order_item.product, 
+              order_item.quantity,
+              order_item.product_price,
+          ])
 
-    return response
+  return response
+
+
 
 def decorator(request):
     return render(request, 'decorator.html')
@@ -68,16 +70,33 @@ def decorator(request):
 @login_required(login_url='login')
 def useradmin(request):
     if request.user.is_admin:
-        orders = Order.objects.annotate(month=ExtractMonth('created_at')).values('month').annotate(count= Count('id')).values('month', 'count')
-        monthNumber = []
-        totalOrders = []
-        for d in orders:
-            monthNumber.append(calendar.month_name[d['month']])
-            totalOrders.append(d['count'])
+        yesterday = datetime.now() - timedelta(days=1) 
+        today = datetime.now() + timedelta(days=1)
+        start_date = request.GET.get('start_date', yesterday.strftime('%Y-%m-%d'))
+        end_date = request.GET.get('end_date', today.strftime('%Y-%m-%d'))
+        try:
+            start_date = datetime.strptime(start_date, '%Y-%m-%d') # type: ignore
+        except:
+            start_date = datetime.strptime(yesterday.strftime('%Y-%m-%d'), '%Y-%m-%d')
+        
+        try:
+            end_date = datetime.strptime(end_date, '%Y-%m-%d') # type: ignore
+        except:
+            end_date = datetime.strptime(today.strftime('%Y-%m-%d'), '%Y-%m-%d')
+        
+        end_date = end_date + timedelta(days=1)
+
+        orders = Order.objects.filter(Q(created_at__gte=start_date) & Q(created_at__lte=end_date))
+        
+        sales = orders.annotate(date=TruncDate('created_at')).values('date').annotate(total_revenue=Sum('order_total'))
+        sales_list = [{'date': sale['date'].strftime('%Y-%m-%d'), 'total_revenue': sale['total_revenue']} for sale in sales]
+        sales_json = json.dumps(sales_list, cls=DjangoJSONEncoder)
+
         context = {
             'orders':orders,
-            'monthNumber':monthNumber,
-            'totalOrders':totalOrders
+            'sales':sales_json,
+            'start_date': start_date,
+            'end_date': end_date
         }
         return render(request, 'index.html', context)
     else:
@@ -532,11 +551,9 @@ def restock(request, order_id):
 
     for order_product in order_products:
         product = order_product.variation
-        print(product.quantity)
-        product.quantity += order_product.quantity
+        product.quantity += order_product.quantity #type: ignore
 
-        product.save()
-        print(product.quantity)
+        product.save() #type: ignore
 
     order.restock = True
     order.save()
