@@ -478,23 +478,16 @@ def orders(request):
 
 # -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+from .signals import order_shipped_signal
+
 def ship(request, order_id):
-    order = Order.objects.get(id = order_id)
+  order = Order.objects.get(id = order_id)
 
-    order.status = 'Shipped'
-    order.save()
-    current_site = get_current_site(request)
-    email = order.email
-    mail_subject = 'Order Shipped'
-    message = render_to_string('orders/shipped_mail.html',{
-        'order':order,
-        'domain' : current_site,
-    })            
-    to_email = email
-    send_mail = EmailMessage(mail_subject, message, to = [to_email])
-    send_mail.send()
+  order.status = 'Shipped'
+  order.save()
+  order_shipped_signal.send(sender=ship, instance=order, request=request)
 
-    return redirect('orders')
+  return redirect('orders')
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
