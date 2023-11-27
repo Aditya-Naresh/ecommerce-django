@@ -39,7 +39,11 @@ urlpatterns = [
     path('edit_variation/<int:variation_id>', views.edit_variation, name='edit_variation'),
     path('delete_variation/<int:variation_id>', views.delete_variation, name='delete_variation'),
     path('add_variation', views.add_variation, name='add_variation'),
-
+    path('colors_size', views.colors_size, name='colors_size'),
+    path('add_size', views.add_size, name='add_size'),
+    path('delete_size/<int:size_id>', views.delete_size, name='delete_size'),
+    path('add_color', views.add_color, name='add_color'),
+    path('delete_color/<int:color_id>', views.delete_color, name='delete_color'),
 # Orders------------------------------------------------------------------------------------------------------------------------------
     path('orders', views.orders, name='orders'),
     path('ship/<int:order_id>', views.ship, name='ship'),

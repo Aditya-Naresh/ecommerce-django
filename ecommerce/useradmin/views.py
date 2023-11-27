@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from email import message
+from multiprocessing import context
 from django.contrib import messages
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
@@ -460,6 +461,62 @@ def add_variation(request):
 
 
 
+# ============================================================================ SIZES ========================================================================================
+def colors_size(request):
+    sizes = Size.objects.all().order_by('name')
+    colors = Color.objects.all().order_by('name')
+    context = {
+        'sizes': sizes,
+        'colors': colors,
+    }
+    return render(request, "variation/colors&size.html",context)
+
+# -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def add_size(request):
+    if request.method == 'POST':
+        form = SizeForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            return redirect('colors_size')
+        
+    form = SizeForm()
+    context = {
+        "form":form
+    }
+    return render(request, "variation/size_form.html", context)
+
+
+# ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def delete_size(request, size_id):
+    size = Size.objects.get(id = size_id)
+    size.delete()
+    return redirect('colors_size')
+
+
+# ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def add_color(request):
+    if request.method == 'POST':
+        form = ColorForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+        return redirect('colors_size')
+    form = ColorForm()
+    context = {
+        'form':form
+    }
+    return render(request,'variation/color_form.html',context)
+
+# ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def delete_color(request, color_id):
+    color = Color.objects.get(id = color_id)
+    color.delete()
+    return redirect('colors_size')
 # ==============================================================================ORDERS==========================================================================
 
 

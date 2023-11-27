@@ -50,7 +50,7 @@ class ColorAdmin(admin.ModelAdmin):
     list_display = ['name','code','color_tag']
 
 class SizeAdmin(admin.ModelAdmin):
-    list_display = ['name','code', 'id']
+    list_display = ['name', 'id']
 
 
 class VariantsAdmin(admin.ModelAdmin):

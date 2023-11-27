@@ -1,3 +1,4 @@
+from dataclasses import fields
 from django import forms
 from accounts.models import Account
 from store.models import *
@@ -136,3 +137,27 @@ class CouponForm(forms.ModelForm):
 class DateRangeForm(forms.Form):
    start_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
    end_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+
+
+class ColorForm(forms.ModelForm):
+    class Meta:
+        model = Color
+        fields = ['name', 'code']
+
+    def __init__(self, *args, **kwargs):
+        super(ColorForm, self).__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs['class'] = "form-control"
+
+
+
+
+class SizeForm(forms.ModelForm):
+    class Meta:
+        model = Size
+        fields = ['name']
+    
+    def __init__(self, *args, **kwargs):
+        super(SizeForm, self).__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs['class'] = "form-control"
