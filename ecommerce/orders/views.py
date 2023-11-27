@@ -41,7 +41,7 @@ def download_invoice(request, order_id):
     if order.coupon:
         discount  = order.coupon.discount_price
     ordered_products = OrderProduct.objects.filter(order_id=order.id) #type:ignore
-    payment = Payment.objects.get(payment_id=order.payment.payment_id) #type:ignore
+    payment = Payment.objects.get(transaction_id=order.payment.transaction_id) #type:ignore
     subtotal = 0
    
     for item in ordered_products:
@@ -50,7 +50,7 @@ def download_invoice(request, order_id):
     context = {
         'order': order,
         'order_number': order.order_number,
-        'transID': payment.payment_id,
+        'transID': payment.transaction_id,
         'ordered_products': ordered_products,
         'subtotal': subtotal,
         'status': payment.status,
@@ -114,7 +114,7 @@ def payments(request):
     # Transactions details 
     payment = Payment(
         user = request.user,
-        payment_id = body['transID'],
+        transaction_id = body['transID'],
         payment_method = body['payment_method'],
         amount_paid = order.order_total,
         status = body['status']
@@ -170,7 +170,7 @@ def payments(request):
 
     data = {
         'order_number' : order.order_number,
-        'transID' : payment.payment_id,
+        'transID' : payment.transaction_id,
 
     }
     return JsonResponse(data)
@@ -271,12 +271,12 @@ def place_order(request, total=0, quantity = 0):
 
 def order_complete(request):
     order_number = request.GET.get('order_number')
-    transID = request.GET.get('payment_id')
+    transID = request.GET.get('transaction_id')
 
     try:
         order = Order.objects.get(order_number = order_number, is_ordered = True)
         ordered_products = OrderProduct.objects.filter(order_id = order.id) # type: ignore
-        payment = Payment.objects.get(payment_id = transID)
+        payment = Payment.objects.get(transaction_id = transID)
         subtotal = 0
         for i in ordered_products:
             subtotal += i.product_price * i.quantity
@@ -291,7 +291,7 @@ def order_complete(request):
             'order':order,
             'ordered_products': ordered_products,
             'order_number':order.order_number,
-            'transID' : payment.payment_id,
+            'transID' : payment.transaction_id,
             'payment' : payment,
             'subtotal' :subtotal,
             'grand_total':grand_total 
@@ -390,7 +390,7 @@ def cash_on_delivery(request):
             'order':order,
             'ordered_products': ordered_products,
             'order_number':order.order_number,
-            'transID' : payment.payment_id,
+            'transID' : payment.transaction_id,
             'payment' : payment,
             'subtotal' :subtotal,
             'grand_total': grand_total
