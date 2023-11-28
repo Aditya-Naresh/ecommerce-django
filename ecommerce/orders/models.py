@@ -8,6 +8,7 @@ from coupon.models import Coupon
 class Payment(models.Model):
     user = models.ForeignKey(Account, on_delete=models.CASCADE)
     transaction_id = models.CharField(max_length=100, blank=True, null=True)
+    payment_id = models.CharField(max_length=100, blank=True, null=True)
     payment_method = models.CharField(max_length=100)
     amount_paid = models.CharField(max_length=100, blank=True, null=True)
     status = models.CharField(max_length=100)

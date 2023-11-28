@@ -115,13 +115,13 @@ def payments(request):
     payment = Payment(
         user = request.user,
         transaction_id = body['transID'],
+        payment_id = body['paymentID'],
         payment_method = body['payment_method'],
         amount_paid = order.order_total,
         status = body['status']
     )
     if order.coupon:
         payment.amount_paid -= order.coupon.discount_price  #type:ignore
-    
     payment.save()
 
     order.payment = payment
@@ -285,7 +285,7 @@ def order_complete(request):
         if order.coupon:
             grand_total -= order.coupon.discount_price
             
-
+        
         
         context ={
             'order':order,
