@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from email import message
-from multiprocessing import context
+import uuid
 from django.contrib import messages
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
@@ -23,7 +23,7 @@ import csv
 from django.db.models.functions import TruncDate
 import json
 from django.core.serializers.json import DjangoJSONEncoder
-
+import requests
 
 from django.utils import timezone
 
@@ -517,9 +517,77 @@ def delete_color(request, color_id):
     color = Color.objects.get(id = color_id)
     color.delete()
     return redirect('colors_size')
+
+
+
 # ==============================================================================ORDERS==========================================================================
+def authenticate_paypal_client(request):
+   # Define the URL for the OAuth 2.0 token endpoint
+   url = "https://api-m.sandbox.paypal.com/v1/oauth2/token"
+
+   # Define the headers for the request
+   headers = {
+       "Accept": "application/json",
+       "Accept-Language": "en_US",
+   }
+
+   # Define the body for the request
+   data = {
+       "grant_type": "client_credentials",
+   }
+
+   # Define the authentication credentials
+   auth = (
+       "AYMn6qkisYhz1vunMdI58XS_3oiCOai_HnqB-JBexsHfBfxltx7sGyfne3LZnCqs-TpcKnLKDKFiIUO1",
+       "EARgvVV_asoRfubPWeHgQDmsbWBFPARR4H-u9rMQ694kyMXkuqFv1R7sw8R5IlfaVpCxqguYGTEuyzNu",
+   )
+
+   # Send the request to the OAuth 2.0 token endpoint
+   response = requests.post(url, headers=headers, data=data, auth=auth)
+
+   # If the request was successful, the response will contain an access token
+   if response.status_code == 200:
+       access_token = response.json()["access_token"]
+       return access_token
+   else:
+       return None
 
 
+
+def refund_payment(request, order_id):
+ # Authenticate the PayPal client
+ access_token = authenticate_paypal_client(request)
+ if access_token is None:
+    return JsonResponse({"error": "Failed to authenticate PayPal client"}, status=401)
+
+ # Get the order
+ order = Order.objects.get(id=order_id)
+
+ # Get the payment ID from the order
+ payment_id = order.payment.payment_id
+
+ # Get the authorization
+ headers = {
+    'Content-Type': 'application/json',
+    'Authorization': f'Bearer {access_token}',
+ }
+
+ request_id = str(uuid.uuid4())
+
+ invoice_id = f"{order_id}-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+
+ # Issue a refund
+ headers['PayPal-Request-Id'] = request_id
+
+ headers['Prefer'] = 'return=representation'
+ data = f'{{ "amount": {{ "value": "{order.order_total}", "currency_code": "USD" }}, "invoice_id": "{invoice_id}", "note_to_payer": "Cancelled_Order" }}'
+ response = requests.post(f'https://api-m.sandbox.paypal.com/v2/payments/captures/{payment_id}/refund', headers=headers, data=data)
+ print(response.json())
+
+ if response.status_code == 201:
+    return JsonResponse({"message": "Refund successful", "refund_id": response.json()['id']}, status=200)
+ else:
+    return JsonResponse({"error": "Failed to refund capture"}, status=response.status_code)
 
 
 def orders(request):

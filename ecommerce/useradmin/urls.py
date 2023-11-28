@@ -74,5 +74,6 @@ urlpatterns = [
 # Reports
     path('download_sales_report',views.download_sales_report, name='download_sales_report'),
 
+    path('refund_payment/<int:order_id>', views.refund_payment, name='refund')
 ]
 

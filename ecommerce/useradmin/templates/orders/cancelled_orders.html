@@ -31,6 +31,8 @@
                 {% if not i.restock %}
                 <a href="{% url 'restock' i.id %}" class="btn btn-outline-info"> <i class="fa fa-shelves"></i> Restock the items </a>             
                 {% endif %}
+                <a href="{% url 'refund' i.id %}" class="btn btn-outline-info"> <i class="fa fa-shelves"></i> Refund </a>             
+
                 </td>
            </tr>
             {% endfor %}
