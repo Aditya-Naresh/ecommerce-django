@@ -585,7 +585,9 @@ def refund_payment(request, order_id):
  print(response.json())
 
  if response.status_code == 201:
-    return JsonResponse({"message": "Refund successful", "refund_id": response.json()['id']}, status=200)
+    order.is_refunded = True
+    order.save()
+    return redirect('cancelled_orders')
  else:
     return JsonResponse({"error": "Failed to refund capture"}, status=response.status_code)
 

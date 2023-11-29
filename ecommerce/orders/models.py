@@ -52,6 +52,7 @@ class Order(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL, null=True, blank=True)
     restock = models.BooleanField(default=False)
+    is_refunded = models.BooleanField(default=False)
 
     def full_name(self):
         return f'{self.first_name} {self.last_name}'

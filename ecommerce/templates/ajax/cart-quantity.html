@@ -36,7 +36,7 @@
             <button class="btn btn-light changeQuantity decrement-btn" type="button" data-cart-item-id="{{ cart_item.id }}"> <i class="fa fa-minus"></i> </a>
         </div>
         <input type="hidden" class="prod_id" value="{{cart_item.id}}">
-        <input type="text" class="form-control qty-input"  data-cart-item-id="{{ cart_item.id }}"  value="{{cart_item.quantity}}">
+        <input type="text" class="form-control qty-input"  data-cart-item-id="{{ cart_item.id }}"  data-productQuantity="{{cart_item.variation.quantity}}" value="{{cart_item.quantity}}">
         <div class="input-group-append">
                
                 

@@ -1,13 +1,15 @@
 $(document).ready(function(){
     // Increment quantity
     $(".increment-btn").on('click', function(){
+        var productQuantity =  $(this).data('productQuantity');
         var cartItemId = $(this).data('cart-item-id');
         var $qtyInput = $(this).closest('.input-group').find(".qty-input");
         var qty = parseInt($qtyInput.val());
-        qty++;
-        $qtyInput.val(qty);
-
-        updateCart(cartItemId, qty);
+        if (qty < productQuantity){
+            qty++;
+            $qtyInput.val(qty);
+            updateCart(cartItemId, qty);
+        }
     });
 
     // Decrement quantity
@@ -24,15 +26,25 @@ $(document).ready(function(){
 
 
     $(".qty-input").on('input', function() {
+        var productQuantity = $(this).data('productquantity'); 
+        console.log("productQuantity", productQuantity);
+    
         var cartItemId = $(this).data('cart-item-id');
         var newQuantity = $(this).val();
-        if (newQuantity  < 1){
-            newQuantity = 1
-            $(this).val = newQuantity
-            location.reload()
+    
+        if (newQuantity < 1) {
+            newQuantity = 1;
+            $(this).val(newQuantity); 
+            // location.reload();
+        } else if (newQuantity > productQuantity) {
+            newQuantity = productQuantity;
+            $(this).val(newQuantity);
+            // location.reload();
         }
+    
         updateCart(cartItemId, newQuantity);
     });
+    
 
     // Function to send the update to the server
     
