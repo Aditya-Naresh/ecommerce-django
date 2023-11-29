@@ -11,7 +11,8 @@
                 <th>Order Total</th>
                 <th>Order Status</th>
                 <th>Created Date</th>
-                <th scope="col"></th>
+                <th scope="col">Restock</th>
+                <th scope="col">Refund</th>
             </tr>
         </thead>
         <tbody>
@@ -29,10 +30,26 @@
                 </td>
                <td>
                 {% if not i.restock %}
-                <a href="{% url 'restock' i.id %}" class="btn btn-outline-info"> <i class="fa fa-shelves"></i> Restock the items </a>             
+                <a href="{% url 'restock' i.id %}" class="btn btn-outline-info"> <i class="fa fa-shelves"></i> Restock the items </a> 
+                {% else %}
+                <span class="bg-success text-white rounded-circle p-1">
+                    <i class="fa fa-check"></i>
+                </span>      
                 {% endif %}
+               </td>
+               <td>
+                {% if i.payment.payment_method == 'PayPal' %}
                 {% if not i.is_refunded %}
-                <a href="{% url 'refund' i.id %}" class="btn btn-outline-warning"> <i class="fa fa-shelves"></i> Refund </a>             
+                <a href="{% url 'refund' i.id %}" class="btn btn-outline-warning"> <i class="fa fa-shelves"></i> Refund </a>
+                {% else %}
+                <span class="bg-success text-white rounded-circle p-1">
+                    <i class="fa fa-check"></i>
+                </span>                
+                {% endif %}
+                {% else %}
+                <span class="bg-danger text-white rounded-circle p-1">
+                    <i class="fa fa-ban"></i>
+                </span>
                 {% endif %}
 
                 </td>
