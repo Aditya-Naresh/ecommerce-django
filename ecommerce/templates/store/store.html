@@ -52,10 +52,10 @@
                     <div class="fix-height">
                         <a href="{{product.get_url}}" class="title"> {{product.product_name}} </a>
                         <div class="price-wrap mt-2">
-                            <span class="price">${{product.calculate_discounted_price}}</span>
+                            {% comment %} <span class="price">${{product.calculate_discounted_price}}</span>
                             {% if product.price != product.calculate_discounted_price %}
                             <span class="ml-3 text-danger"><b><del> ${{product.price}} </del></b></span>
-                            {% endif %}
+                            {% endif %} {% endcomment %}
                         </div> <!-- price-wrap.// -->
                         <div class="rating-star">
                             <span>
