@@ -247,7 +247,10 @@ def update_cart(request):
     # Update the cart item's quantity
 
     cart_item = CartItem.objects.get(id=cart_item_id)
-    cart_item.quantity = new_quantity
+    if int(new_quantity) < cart_item.variation.quantity:
+        cart_item.quantity = int(new_quantity)
+    else:
+        cart_item.quantity = cart_item.variation.quantity
     cart_item.save()
     total = 0
     quantity = 0

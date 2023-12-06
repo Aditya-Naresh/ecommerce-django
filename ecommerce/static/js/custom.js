@@ -1,15 +1,14 @@
 $(document).ready(function(){
     // Increment quantity
     $(".increment-btn").on('click', function(){
-        var productQuantity =  $(this).data('productQuantity');
         var cartItemId = $(this).data('cart-item-id');
         var $qtyInput = $(this).closest('.input-group').find(".qty-input");
         var qty = parseInt($qtyInput.val());
-        if (qty < productQuantity){
+        
             qty++;
             $qtyInput.val(qty);
             updateCart(cartItemId, qty);
-        }
+        
     });
 
     // Decrement quantity
@@ -39,7 +38,7 @@ $(document).ready(function(){
         } else if (newQuantity > productQuantity) {
             newQuantity = productQuantity;
             $(this).val(newQuantity);
-            // location.reload();
+        //     // location.reload();
         }
     
         updateCart(cartItemId, newQuantity);

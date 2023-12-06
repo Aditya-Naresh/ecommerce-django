@@ -94,10 +94,11 @@ AUTH_USER_MODEL = 'accounts.Account'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ecom',
+        'NAME': 'postgres',
         'USER': 'postgres',
-        'PASSWORD': '1234',
-        'HOST': 'localhost'
+        'PASSWORD': 'pass1234$',
+        'HOST': 'ecom-database.cyc726r0mcnv.us-east-2.rds.amazonaws.com',
+        'PORT': '5432'
     }
 }
 
