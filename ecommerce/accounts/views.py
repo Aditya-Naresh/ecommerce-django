@@ -229,7 +229,7 @@ def forgotPassword(request):
             user = Account.objects.get(email__exact = email)
 
             # Reset Password
-            current_site = get_current_site(request)
+            current_site = '3.22.101.247:8000'
             mail_subject = 'Password Reset'
 
             message = render_to_string('accounts/reset_password_email.html',{
