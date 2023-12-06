@@ -66,7 +66,7 @@ def register(request, *args, **kwargs):
             else:
                 pass
             # User activation
-            current_site = get_current_site(request)
+            current_site = '3.22.101.247:8000'
             mail_subject = 'Account Activation'
 
             message = render_to_string('accounts/account_verification_email.html',{
