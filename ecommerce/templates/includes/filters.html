@@ -29,7 +29,7 @@
             {% for color in colors %}
             <li class="list-group-item">
                 <input class="filter-checkbox" value="{{color}}" data-filter="color" type="checkbox" />&nbsp;
-                <button class="btn" style="background-color: {{color}}; margin-top:-6px; border:1px solid gray"></button>
+                <button class="btn" style="background-color: {{color.code}}; margin-top:-6px; border:1px solid gray"></button>
             </li>
             {% endfor %}
         
@@ -67,8 +67,8 @@
         <div class="list-group list-group-flush">
             {% for size in sizes %}
             <li class="list-group-item">
-                <input value="{{size}}" data-filter="size" type="checkbox" class="filter-checkbox" />&nbsp;
-                {{size}}    
+                <input value="{{size.id}}" data-filter="size" type="checkbox" class="filter-checkbox" />&nbsp;
+                {{size.name}}    
             </li>
             {% endfor %}
         
