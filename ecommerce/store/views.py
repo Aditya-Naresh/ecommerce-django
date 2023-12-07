@@ -182,16 +182,16 @@ def filter_data(request):
     allProducts = allProducts.filter(price__gte = minPrice)
     allProducts = allProducts.filter(price__lte = maxPrice)
     if len(colors) > 0:
-        allProducts = allProducts.filter(variation__variation_value__in=colors).distinct()
+        allProducts = allProducts.filter(color=colors).distinct()
 
     if len(sizes) > 0:
-        allProducts = allProducts.filter(variation__variation_value__in=sizes).distinct()
+        allProducts = allProducts.filter(size=sizes).distinct()
 
     if len(categories) > 0:
-        allProducts = allProducts.filter(category__id__in =categories).distinct()
+        allProducts = allProducts.filter(product_category__id__in =categories).distinct()
 
     if len(brands) > 0:
-        allProducts = allProducts.filter(brand__id__in =brands).distinct()
+        allProducts = allProducts.filter(product_brand__id__in =brands).distinct()
 
     if sort:
         allProducts = allProducts.order_by(sort)
