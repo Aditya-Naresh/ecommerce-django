@@ -159,7 +159,7 @@ class Variation(models.Model):
 
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(str(self.color) + str(self.size))
+        self.slug = slugify(self.product.product_name + str(self.color) + str(self.size))
         
         if self.price < 0:
             self.price = 1
