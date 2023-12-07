@@ -177,21 +177,21 @@ def filter_data(request):
     maxPrice = request.GET['maxPrice']
     sort = request.GET['sort']
 
-    allProducts = Variation.objects.all().order_by('-id')
+    allProducts = Product.objects.all().order_by('-id')
 
-    allProducts = allProducts.filter(price__gte = minPrice)
-    allProducts = allProducts.filter(price__lte = maxPrice)
+    allProducts = allProducts.filter(variation__price__gte = minPrice).distinct()
+    allProducts = allProducts.filter(variation__price__lte = maxPrice).distinct()
     if len(colors) > 0:
-        allProducts = allProducts.filter(color=colors).distinct()
+        allProducts = allProducts.filter(variation__color__in=colors).distinct()
 
     if len(sizes) > 0:
-        allProducts = allProducts.filter(size=sizes).distinct()
+        allProducts = allProducts.filter(variation__size__in=sizes).distinct()
 
     if len(categories) > 0:
-        allProducts = allProducts.filter(product_category__id__in =categories).distinct()
+        allProducts = allProducts.filter(category__id__in =categories).distinct()
 
     if len(brands) > 0:
-        allProducts = allProducts.filter(product_brand__id__in =brands).distinct()
+        allProducts = allProducts.filter(brand__id__in =brands).distinct()
 
     if sort:
         allProducts = allProducts.order_by(sort)
