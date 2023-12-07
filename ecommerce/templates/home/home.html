@@ -31,7 +31,7 @@
 			<a href="{{product.get_url}}" class="img-wrap"> <img src="{{product.image.url}}"> </a>
 			<figcaption class="info-wrap">
 				<a href="{{product.get_url}}" class="title"> {{product.product_name}} </a>
-				<div class="price mt-1">${{product.price | floatformat:2}}</div> <!-- price-wrap.// -->
+				{% comment %} <div class="price mt-1">${{product.price | floatformat:2}}</div> <!-- price-wrap.// --> {% endcomment %}
 				<div class="rating-star">
 					<span>
 					  <i class="fa fa-star{% if product.averageReview < 0.5 %}-o{% elif single_product.averageReview < 1 and single_product.averageReview >= 0.5 %}-half-o{% endif %}" aria-hidden="true"></i>
