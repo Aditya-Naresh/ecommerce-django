@@ -177,7 +177,7 @@ def filter_data(request):
     maxPrice = request.GET['maxPrice']
     sort = request.GET['sort']
 
-    allProducts = Product.objects.all().order_by('-id')
+    allProducts = Product.objects.all().distinct().order_by('-id')
 
     allProducts = allProducts.filter(variation__price__gte = minPrice).distinct()
     allProducts = allProducts.filter(variation__price__lte = maxPrice).distinct()
