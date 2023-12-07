@@ -179,8 +179,8 @@ def filter_data(request):
 
     allProducts = Product.objects.all().distinct().order_by('-id')
 
-    allProducts = allProducts.filter(variation__price__gte = minPrice).distinct()
-    allProducts = allProducts.filter(variation__price__lte = maxPrice).distinct()
+    allProducts = allProducts.filter(variation__price__gte = minPrice)
+    allProducts = allProducts.filter(variation__price__lte = maxPrice)
     if len(colors) > 0:
         allProducts = allProducts.filter(variation__color__in=colors).distinct()
 
