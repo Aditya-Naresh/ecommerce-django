@@ -1,4 +1,4 @@
-Django==4.2.4
+Django==4.2.11
 django_admin_thumbnails==0.2.8
 django_multiupload==0.6.1
 reportlab==3.6.8
