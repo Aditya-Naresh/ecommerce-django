@@ -2,27 +2,41 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from .utils import generate_ref_code
 
+
 class MyAccountManager(BaseUserManager):
-    def create_user(self, first_name, last_name, username, email, password = None):
+    def create_user(
+        self,
+        first_name,
+        last_name,
+        username,
+        email,
+        password=None,
+    ):
         if not email:
-            raise ValueError('User must have an email address')
-        
+            raise ValueError("User must have an email address")
+
         if not username:
-            raise ValueError('User must have an username')
-        
+            raise ValueError("User must have an username")
+
         user = self.model(
-            email = self.normalize_email(email),
-            username = username,
-            first_name = first_name,
-            last_name = last_name
+            email=self.normalize_email(email),
+            username=username,
+            first_name=first_name,
+            last_name=last_name,
         )
 
         user.set_password(password)
-        user.save(using = self._db)
+        user.save(using=self._db)
         return user
-    
 
-    def create_superuser(self, first_name, last_name,email, username, password):
+    def create_superuser(
+        self,
+        first_name,
+        last_name,
+        email,
+        username,
+        password,
+    ):
         user = self.create_user(
             email=self.normalize_email(email),
             username=username,
@@ -35,8 +49,7 @@ class MyAccountManager(BaseUserManager):
         user.is_active = True
         user.is_staff = True
         user.is_superadmin = True
-        user.save(using = self._db)
-
+        user.save(using=self._db)
 
 
 class Account(AbstractBaseUser):
@@ -56,42 +69,43 @@ class Account(AbstractBaseUser):
     is_superadmin = models.BooleanField(default=False)
     is_blocked = models.BooleanField(default=False)
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["username", "first_name", "last_name"]
 
     objects = MyAccountManager()
 
     def full_name(self):
-        return f'{self.first_name} {self.last_name}'
+        return f"{self.first_name} {self.last_name}"
 
     def __str__(self) -> str:
         return self.email
-    
 
     def has_perm(self, perm, obj=None):
         return self.is_admin
-    
+
     def has_module_perms(self, add_label):
         return True
-    
-
 
 
 class UserProfile(models.Model):
     user = models.OneToOneField(Account, on_delete=models.CASCADE)
-    address_line_1 = models.CharField(blank = True, max_length=100)
-    address_line_2 = models.CharField(blank = True, max_length=100)
-    profile_picture = models.ImageField(blank=True, upload_to='profile_pic/')
+    address_line_1 = models.CharField(blank=True, max_length=100)
+    address_line_2 = models.CharField(blank=True, max_length=100)
+    profile_picture = models.ImageField(blank=True, upload_to="profile_pic/")
     city = models.CharField(blank=True, max_length=20)
     state = models.CharField(blank=True, max_length=20)
     country = models.CharField(blank=True, max_length=20)
     pincode = models.CharField(blank=True, max_length=15)
     code = models.CharField(max_length=12, blank=True)
-    recommended_by = models.ForeignKey(Account, on_delete=models.SET_NULL, blank=True, null=True, related_name='ref_by')
-    
-    
+    recommended_by = models.ForeignKey(
+        Account,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="ref_by",
+    )
 
-    def save(self,*args, **kwargs):
+    def save(self, *args, **kwargs):
         if self.code == "":
             code = generate_ref_code()
             self.code = code
@@ -99,6 +113,6 @@ class UserProfile(models.Model):
 
     def __str__(self) -> str:
         return self.user.first_name
-    
+
     def full_address(self):
-        return f'{self.address_line_1} {self.address_line_2}'
+        return f"{self.address_line_1} {self.address_line_2}"

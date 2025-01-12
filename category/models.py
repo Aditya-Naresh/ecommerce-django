@@ -2,13 +2,21 @@ from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 from offers.models import CategoryOffer
+from cloudinary.models import CloudinaryField
+
 
 # Create your models here.
 class Category(models.Model):
     category_name = models.CharField(max_length=50, unique=True)
     slug = models.SlugField(max_length=100, unique=True, blank=True)
-    cat_image = models.ImageField(upload_to="photos/categories", blank=True,)
-    offer = models.ForeignKey(CategoryOffer, on_delete=models.CASCADE, null=True, blank=True)
+    cat_image = CloudinaryField(
+        "image",
+        blank=True,
+        null=True,
+    )
+    offer = models.ForeignKey(
+        CategoryOffer, on_delete=models.CASCADE, null=True, blank=True
+    )
 
     class Meta:
         verbose_name = "Category"
@@ -21,12 +29,8 @@ class Category(models.Model):
 
         super(Category, self).save(*args, **kwargs)
 
-
-
     def get_url(self):
-        return reverse('products_by_category', args=[self.slug])
-
+        return reverse("products_by_category", args=[self.slug])
 
     def __str__(self) -> str:
         return self.category_name
-    

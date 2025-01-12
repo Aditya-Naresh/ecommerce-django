@@ -1,6 +1,7 @@
 from django.db import models
 from accounts.models import Account
 
+
 # Create your models here.
 class UserAddressBook(models.Model):
     user = models.ForeignKey(Account, on_delete=models.CASCADE, null=True)
@@ -16,5 +17,3 @@ class UserAddressBook(models.Model):
     pincode = models.CharField(max_length=20, null=True, blank=True)
     order_note = models.CharField(max_length=100, blank=True)
     status = models.BooleanField(default=False)
-
-    

@@ -1,5 +1,9 @@
 import environ
 from pathlib import Path
+from urllib.parse import urlparse
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 env = environ.Env()
 environ.Env.read_env()
@@ -22,6 +26,8 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
+    "cloudinary",
+    "cloudinary_storage",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -84,24 +90,26 @@ AUTH_USER_MODEL = "accounts.Account"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": "postgres",
-#         "USER": "postgres",
-#         "PASSWORD": "pass1234$",
-#         "HOST": "ecom-database.cyc726r0mcnv.us-east-2.rds.amazonaws.com",
-#         "PORT": "5432",
-#     }
-# }
+url = urlparse(env("DB_URL"))
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR
-        / "db.sqlite3",  # Stores the database file in your project directory
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": url.path[1:],
+        "USER": url.username,
+        "PASSWORD": url.password,
+        "HOST": url.hostname,
+        "PORT": "5432",
     }
 }
+
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR
+#         / "db.sqlite3",  # Stores the database file in your project directory
+#     }
+# }
 
 
 # Password validation
@@ -150,8 +158,15 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 # Media files cofig
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+# MEDIA_URL = "/media/"
+# MEDIA_ROOT = BASE_DIR / "media"
+
+# Cloudinary Configuration
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": env("CLOUDINARY_CLOUD_NAME"),
+    "API_KEY": env("CLOUDINARY_API_KEY"),
+    "API_SECRET": env("CLOUDINARY_API_SECRET"),
+}
 
 
 # SMTP config
@@ -162,4 +177,4 @@ EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = env("EMAIL_USE_TLS")
 
 # Session engine
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
