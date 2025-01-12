@@ -25,25 +25,25 @@ The project is organized as follows:
 ## Installation
 
 1. Clone the repository:
-    ```bash
-    [Ecommerce Repo](https://github.com/Aditya-Naresh/ecommerce-django.git)
-    ```
+   ```bash
+   https://github.com/Aditya-Naresh/ecommerce-django.git
+   ```
 2. Navigate to the project directory:
-    ```bash
-    cd ecommerce
-    ```
+   ```bash
+   cd ecommerce
+   ```
 3. Install the required dependencies:
-    ```bash
-    pip install -r requirements.txt
-    ```
+   ```bash
+   pip install -r requirements.txt
+   ```
 4. Apply migrations:
-    ```bash
-    python manage.py migrate
-    ```
+   ```bash
+   python manage.py migrate
+   ```
 5. Run the development server:
-    ```bash
-    python manage.py runserver
-    ```
+   ```bash
+   python manage.py runserver
+   ```
 
 ## Usage
 
@@ -53,4 +53,3 @@ The project is organized as follows:
 ## Contributing
 
 Contributions are welcome! Please fork the repository and submit a pull request.
-
