@@ -92,24 +92,24 @@ AUTH_USER_MODEL = "accounts.Account"
 
 url = urlparse(env("DB_URL"))
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": url.path[1:],
-#         "USER": url.username,
-#         "PASSWORD": url.password,
-#         "HOST": url.hostname,
-#         "PORT": "5432",
-#     }
-# }
-
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR
-        / "db.sqlite3",  # Stores the database file in your project directory
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": url.path[1:],
+        "USER": url.username,
+        "PASSWORD": url.password,
+        "HOST": url.hostname,
+        "PORT": "5432",
     }
 }
+
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR
+#         / "db.sqlite3",  # Stores the database file in your project directory
+#     }
+# }
 
 
 # Password validation
