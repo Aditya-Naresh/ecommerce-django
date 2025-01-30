@@ -207,9 +207,10 @@ def dashboard(request):
     orders = Order.objects.order_by("-created_at").filter(
         user_id=request.user.id, is_ordered=True
     )
+    site  = env("DOMAIN")
     orders_count = orders.count
     userprofile = UserProfile.objects.get(user_id=request.user.id)
-    context = {"orders_count": orders_count, "userprofile": userprofile}
+    context = {"orders_count": orders_count, "userprofile": userprofile ,"site" : site}
     return render(request, "accounts/dashboard.html", context)
 
 
